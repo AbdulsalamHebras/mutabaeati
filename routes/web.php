@@ -20,25 +20,11 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
-        if (auth()->user()->isAdmin()) {
-            return redirect()->route('admin.dashboard');
-        }
         if (auth()->user()->isMuraqib()) {
             return redirect()->route('muraqib.dashboard');
         }
         return redirect()->route('muhdir.dashboard');
     })->name('dashboard');
-
-    // Admin Dashboard & Student Management
-    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
-        
-        Route::get('/students', [App\Http\Controllers\AdminController::class, 'students'])->name('students.index');
-        Route::get('/students/create', [App\Http\Controllers\AdminController::class, 'createStudent'])->name('students.create');
-        Route::post('/students', [App\Http\Controllers\AdminController::class, 'storeStudent'])->name('students.store');
-    });
 
     // Muhdir Dashboard & Student List
     Route::middleware(['role:muhdir'])->prefix('muhdir')->name('muhdir.')->group(function () {

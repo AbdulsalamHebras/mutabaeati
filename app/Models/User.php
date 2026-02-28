@@ -14,7 +14,6 @@ class User extends Authenticatable
 
     const ROLE_MUHDIR = 'muhdir';
     const ROLE_MURAQIB = 'muraqib';
-    const ROLE_ADMIN = 'admin';
 
     public function students()
     {
@@ -41,11 +40,6 @@ class User extends Authenticatable
     public function isMuraqib(): bool
     {
         return $this->role === self::ROLE_MURAQIB;
-    }
-
-    public function isAdmin(): bool
-    {
-        return $this->role === self::ROLE_ADMIN;
     }
 
     /**
