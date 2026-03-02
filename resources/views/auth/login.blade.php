@@ -18,7 +18,7 @@ x                </div>
                         <div class="relative group">
                             <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
                                 class="w-full bg-blue-50/50 border border-blue-100 rounded-xl py-4 px-12 text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-right"
-                                placeholder="ex@gmail.com">
+                                placeholder="example@gmail.com">
                             <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
                                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
