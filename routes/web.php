@@ -29,6 +29,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Muhdir Dashboard & Student List
     Route::middleware(['role:muhdir'])->prefix('muhdir')->name('muhdir.')->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\MuhdirController::class, 'dashboard'])->name('dashboard');
+        Route::get('/distributions', [App\Http\Controllers\MuhdirController::class, 'distributions'])->name('distributions.index');
+        Route::get('/reports', [App\Http\Controllers\MuhdirController::class, 'reports'])->name('reports.index');
         Route::get('/reports/create/{student}', [App\Http\Controllers\ReportController::class, 'create'])->name('reports.create');
         Route::post('/reports', [App\Http\Controllers\ReportController::class, 'store'])->name('reports.store');
     });

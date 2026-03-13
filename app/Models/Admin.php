@@ -19,6 +19,11 @@ class Admin extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return true; // Simple setup for now, can be refined
+        return true;
+    }
+
+    public function students()
+    {
+        return $this->hasMany(Student::class, 'admin_id');
     }
 }

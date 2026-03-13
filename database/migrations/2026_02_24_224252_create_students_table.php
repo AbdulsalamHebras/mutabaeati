@@ -27,6 +27,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->enum('status', ['نشط', 'مقيد'])->default('نشط');
             $table->foreignId('muhdir_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('admin_id')->nullable()->constrained('admins')->onDelete('set null');
             $table->timestamps();
         });
     }

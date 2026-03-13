@@ -12,8 +12,26 @@ class Student extends Model
     protected $fillable = [
         'name', 'muhdir_id', 'phone', 'national_id', 'email', 
         'specialization_id', 'duration', 'section', 'university_id', 
-        'batch_id', 'academic_id', 'status', 'platform_password', 'notes'
+        'batch_id', 'academic_id', 'status', 'platform_password', 'notes',
+        'admin_id'
     ];
+
+    public function creator()
+    {
+        return $this->belongsTo(Admin::class, 'admin_id');
+    }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function months()
+    {
+        return $this->belongsToMany(Month::class, 'subscriptions')
+            ->withPivot(['amount', 'is_paid', 'notes'])
+            ->withTimestamps();
+    }
 
     public function muhdir()
     {
