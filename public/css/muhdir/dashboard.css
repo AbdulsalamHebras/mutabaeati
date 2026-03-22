@@ -1,0 +1,61 @@
+.card {
+    background: #fff;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #eee;
+}
+
+.card-header {
+    padding: 15px;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.card-body {
+    display: none;
+    padding: 10px;
+}
+
+.sub-card {
+    margin-bottom: 10px;
+}
+
+.sub-header {
+    background: #f1f5f9;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.sub-body {
+    display: none;
+    padding: 10px;
+}
+/* تثبيت الهيدر */
+.table thead th {
+    position: sticky;
+    top: 0;
+    background: #2563eb;
+    color: white;
+    z-index: 2;
+}
+/* الجدول */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.table th {
+    background: #f8fafc;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+}

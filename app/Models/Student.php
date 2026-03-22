@@ -10,8 +10,8 @@ class Student extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'muhdir_id', 'phone', 'national_id', 'email', 
-        'specialization_id', 'duration', 'section', 'university_id', 
+        'name', 'muhdir_id', 'phone', 'national_id', 'email',
+        'specialization_id', 'duration', 'section', 'university_id',
         'batch_id', 'academic_id', 'status', 'platform_password', 'notes',
         'admin_id'
     ];
@@ -56,5 +56,9 @@ class Student extends Model
     public function batch()
     {
         return $this->belongsTo(Batch::class);
+    }
+    public function examDistribution()
+    {
+        return $this->hasOne(\App\Models\ExamDistribution::class, 'student_id');
     }
 }

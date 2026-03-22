@@ -1,0 +1,127 @@
+body {
+    font-family: Tahoma;
+    background: #f5f6f8;
+}
+
+/* التوسيط */
+.login-wrapper {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* الكرت */
+.login-card {
+    width: 100%;
+    max-width: 380px; /* 🔥 هذا اللي صغّرها */
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+/* النص */
+.subtitle {
+    text-align: center;
+    color: #777;
+    margin-bottom: 20px;
+}
+
+/* الحقول */
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: #eef2f7;
+}
+
+/* الباسورد */
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #555;
+}
+
+/* الخيارات */
+.options {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.options a {
+    color: #3b82f6;
+}
+
+/* زر */
+button {
+    width: 100%;
+    padding: 12px;
+    background: #3b82f6;
+    border: none;
+    color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #2563eb;
+}
+
+/* 📱 موبايل */
+@media (max-width: 480px) {
+    .login-card {
+        margin: 10px;
+        padding: 20px;
+    }
+}
+/* الروابط */
+.nav-link {
+    color: #6b7280; /* رمادي */
+    transition: 0.3s;
+    position: relative;
+}
+
+/* عند المرور */
+.nav-link:hover {
+    color: #2563eb;
+}
+
+/* الصفحة الحالية */
+.nav-link.active {
+    color: #2563eb;
+    font-weight: bold;
+}
+
+/* خط تحت العنصر النشط */
+.nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    right: 0;
+    width: 100%;
+    height: 2px;
+    background: #2563eb;
+    border-radius: 5px;
+}

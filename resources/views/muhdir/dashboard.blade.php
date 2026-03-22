@@ -1,50 +1,145 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('لوحة التحكم - المحضر') }}
-        </h2>
-    </x-slot>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحضير المحضر</title>
 
-    <div class="py-12" dir="rtl">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="mb-4 p-4 bg-emerald-100 text-emerald-700 rounded-lg border border-emerald-200 text-right">
-                    {{ session('success') }}
+    <link rel="stylesheet" href="{{ asset('css/muhdir/dashboard.css') }}">
+</head>
+<body>
+    @include('includes.header')
+    <input type="text" id="searchInput" placeholder="🔍 ابحث عن طالب..." class="search-box">
+
+    <div class="container">
+
+        @foreach($students as $universityName => $uniStudents)
+
+            <!-- 🎓 الجامعة -->
+            <div class="card">
+                <div class="card-header" onclick="toggle(this)">
+                    {{ $universityName }}
                 </div>
-            @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <h3 class="text-lg font-bold mb-4 text-right">طلابي المكلف بهم</h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        @forelse($students as $student)
-                            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex justify-between items-start mb-4">
-                                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
-                                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                                        </svg>
-                                    </div>
-                                    <span class="text-xs bg-blue-100 text-blue-700 font-bold px-2 py-1 rounded-md">طالب</span>
-                                </div>
-                                <h4 class="text-lg font-black text-slate-800 mb-4 text-right">{{ $student->name }}</h4>
-                                
-                                <a href="{{ route('muhdir.reports.create', $student->id) }}" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                    </svg>
-                                    رفع تقرير شهري
-                                </a>
+                <div class="card-body">
+
+                    @php
+                        $batches = $uniStudents->groupBy('batch.name');
+                    @endphp
+
+                    @foreach($batches as $batchName => $batchStudents)
+
+                        <!-- 📦 الدفعة -->
+                        <div class="sub-card">
+                            <div class="sub-header" onclick="toggle(this)">
+                                الدفعة: {{ $batchName }}
                             </div>
-                        @empty
-                            <div class="col-span-full py-20 text-center text-gray-400">
-                                لا يوجد طلاب مكلفين بك حالياً
+
+                            <div class="sub-body">
+                                <div id="pagination"></div>
+                                <button onclick="exportTable()">📥 تصدير Excel</button>
+
+                                <!-- 📊 جدول الطلاب -->
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>الاسم</th>
+                                            <th>الهاتف</th>
+                                            <th>الرقم الوطني</th>
+                                            <th> كلمة المرور</th>
+                                            <th>البريد</th>
+                                            <th>التخصص</th>
+                                            <th>المدة</th>
+                                            <th>القسم</th>
+                                            <th>ملاحظات</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @foreach($batchStudents as $student)
+                                            <tr>
+                                                <td>{{ $student->name }}</td>
+                                                <td>{{ $student->phone }}</td>
+                                                <td>{{ $student->national_id }}</td>
+                                                <td>{{ $student->platform_password }}</td>
+                                                <td>{{ $student->email }}</td>
+                                                <td>{{ $student->specialization->name ?? '-' }}</td>
+                                                <td>{{ $student->duration }}</td>
+                                                <td>{{ $student->section }}</td>
+                                                <td>{{ $student->notes }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+
                             </div>
-                        @endforelse
-                    </div>
+                        </div>
+
+                    @endforeach
+
                 </div>
             </div>
-        </div>
+
+        @endforeach
+
     </div>
-</x-app-layout>
+    <script>
+    function toggle(element) {
+        let body = element.nextElementSibling;
+
+        if (!body) return;
+
+        if (body.style.display === "block") {
+            body.style.display = "none";
+        } else {
+            body.style.display = "block";
+        }
+    }
+    document.getElementById("searchInput").addEventListener("keyup", function () {
+        let value = this.value.toLowerCase();
+        let rows = document.querySelectorAll(".table tbody tr");
+
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(value)
+                ? ""
+                : "none";
+        });
+    });
+    let rowsPerPage = 5;
+        let table = document.querySelector(".table tbody");
+        let rows = table.querySelectorAll("tr");
+
+        function showPage(page) {
+            rows.forEach((row, index) => {
+                row.style.display = (index >= (page-1)*rowsPerPage && index < page*rowsPerPage)
+                    ? ""
+                    : "none";
+            });
+        }
+
+        function createPagination() {
+            let pageCount = Math.ceil(rows.length / rowsPerPage);
+            let container = document.getElementById("pagination");
+
+            for (let i = 1; i <= pageCount; i++) {
+                let btn = document.createElement("button");
+                btn.innerText = i;
+                btn.onclick = () => showPage(i);
+                container.appendChild(btn);
+            }
+        }
+
+        createPagination();
+        showPage(1);
+        function exportTable() {
+            let table = document.querySelector(".table").outerHTML;
+            let url = 'data:application/vnd.ms-excel,' + encodeURIComponent(table);
+            let link = document.createElement("a");
+            link.href = url;
+            link.download = "students.xls";
+            link.click();
+        }
+    </script>
+
+    @include('includes.footer')
+</body>

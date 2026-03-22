@@ -17,11 +17,11 @@ class ExamDistributionResource extends Resource
     protected static ?string $model = ExamDistribution::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
-    
+
     protected static ?string $navigationLabel = 'توزيعات الاختبارات';
-    
+
     protected static ?string $modelLabel = 'توزيع اختبار';
-    
+
     protected static ?string $pluralModelLabel = 'توزيعات الاختبارات';
 
     public static function form(Form $form): Form
@@ -49,12 +49,10 @@ class ExamDistributionResource extends Resource
                         'من 9 الى 10' => 'من 9 الى 10',
                     ])
                     ->required(),
-                Forms\Components\TextInput::make('room_number')
-                    ->label('رقم القاعة')
+                Forms\Components\TextInput::make('subject')
+                    ->label('المادة')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('seat_number')
-                    ->label('رقم الجلوس')
-                    ->maxLength(255),
+
             ])->columns(2);
     }
 
@@ -72,12 +70,10 @@ class ExamDistributionResource extends Resource
                 Tables\Columns\TextColumn::make('period')
                     ->label('الفترة')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('room_number')
-                    ->label('القاعة')
+                Tables\Columns\TextColumn::make('subject')
+                    ->label('المادة')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('seat_number')
-                    ->label('رقم الجلوس')
-                    ->sortable(),
+
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('supervisor')

@@ -1,0 +1,200 @@
+/* إعدادات عامة */
+body {
+    margin: 0;
+    font-family: Tahoma;
+    background: #f5f6f8;
+}
+
+/* الحاوية */
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 0 20px;
+}
+
+/* الهيدر */
+.header {
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+/* مسافة تحت الهيدر */
+.header-space {
+    height: 70px;
+}
+
+/* ترتيب العناصر */
+.header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+}
+
+/* الشعار */
+.logo {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* القائمة */
+.nav {
+    display: flex;
+    gap: 30px;
+}
+
+/* الروابط */
+.nav-link {
+    text-decoration: none;
+    color: #555;
+    transition: 0.3s;
+    position: relative;
+}
+
+/* hover */
+.nav-link:hover {
+    color: #2563eb;
+}
+
+/* الصفحة الحالية */
+.nav-link.active {
+    color: #2563eb;
+    font-weight: bold;
+}
+
+/* خط تحت العنصر */
+.nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    right: 0;
+    width: 100%;
+    height: 2px;
+    background: #2563eb;
+}
+
+/* زر الجوال */
+.menu-toggle {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* 📱 موبايل */
+@media (max-width: 768px) {
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav {
+        position: absolute;
+        top: 70px;
+        right: 0;
+        width: 100%;
+        background: #fff;
+        flex-direction: column;
+        align-items: center;
+        display: none;
+        padding: 20px 0;
+        border-top: 1px solid #eee;
+    }
+
+    .nav.show {
+        display: flex;
+    }
+}
+/* يمين الهيدر */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* الإشعارات */
+.notifications {
+    position: relative;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* رقم الإشعارات */
+.badge {
+    position: absolute;
+    top: -5px;
+    left: -8px;
+    background: red;
+    color: white;
+    font-size: 12px;
+    border-radius: 50%;
+    padding: 2px 6px;
+}
+
+/* المستخدم */
+.user-menu {
+    position: relative;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* القائمة المنسدلة */
+.dropdown {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    min-width: 180px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    display: none;
+    padding: 10px;
+    z-index: 999;
+}
+
+/* عرض القائمة */
+.dropdown.show {
+    display: block;
+}
+
+/* عناصر */
+.dropdown a,
+.dropdown p {
+    display: block;
+    padding: 8px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+}
+
+.dropdown a:hover {
+    background: #f5f6f8;
+}
+
+/* زر تسجيل الخروج */
+.logout-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: right;
+    padding: 8px;
+    cursor: pointer;
+    color: red;
+}
+
+.logout-btn:hover {
+    background: #f5f6f8;
+}
+
+/* الفوتر */
+.footer {
+    background: #fff;
+    text-align: center;
+    padding: 20px;
+    margin-top: 50px;
+    border-top: 1px solid #eee;
+}
