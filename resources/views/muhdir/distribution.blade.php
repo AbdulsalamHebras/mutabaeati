@@ -8,13 +8,29 @@
     <title>توزيع الاختبارات</title>
 </head>
 <body>
+    @include('includes.header')
     <h2>توزيع الاختبارات</h2>
     <form method="GET" class="filters">
 
-        <input type="time" name="period" value="{{ request('period') }}">
+        <select name="period" class="form-control">
+            <option value="">اختر الفترة</option>
+            @foreach($periods as $period)
+                <option value="{{ $period }}"
+                    {{ request('period') == $period ? 'selected' : '' }}>
+                    {{ $period }}
+                </option>
+            @endforeach
+        </select>
 
-        <input type="text" name="section" placeholder="الشعبة"
-            value="{{ request('section') }}">
+        <select name="section" class="form-control">
+            <option value="">اختر الشعبة</option>
+            @foreach($sections as $section)
+                <option value="{{ $section }}"
+                    {{ request('section') == $section ? 'selected' : '' }}>
+                    {{ $section }}
+                </option>
+            @endforeach
+        </select>
 
         <select name="specialization_id">
             <option value="">كل التخصصات</option>
@@ -54,41 +70,56 @@
                         <!-- 🔍 البحث -->
                         <input type="text" class="search-box" placeholder="بحث...">
 
-                        <!-- 📊 الجدول -->
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>الاسم</th>
-                                    <th>الهاتف</th>
-                                    <th>القسم</th>
-                                    <th>التخصص</th>
-                                    <th>الشعبة</th>
-                                    <th>المادة</th>
-                                    <th>وقت الاختبار</th>
-                                </tr>
-                            </thead>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>الهاتف</th>
+                                        <th>القسم</th>
+                                        <th>التخصص</th>
+                                        <th>الشعبة</th>
+                                        <th>المادة</th>
+                                        <th>وقت الاختبار</th>
+                                    </tr>
+                                </thead>
 
-                            <tbody>
-                                @foreach($batchStudents as $student)
-                                <tr>
-                                    <td>{{ $student->name }}</td>
-                                    <td>{{ $student->phone }}</td>
-                                    <td>{{ $student->national_id }}</td>
-                                    <td>{{ $student->specialization->name ?? '-' }}</td>
-                                    <td>{{ $student->section }}</td>
-                                    <td>{{ $student->examDistribution->subject ?? 'غير محدد' }}</td>
-                                    <td>{{ $student->examDistribution->period ?? 'غير محدد' }}</td>
+                                <tbody>
+                                    @foreach($batchStudents as $student)
+                                    <tr>
+                                        <td>{{ $student->name }}</td>
+                                        <td>{{ $student->phone }}</td>
+                                        <td>{{$student->national_id}}</td>
+                                        <td>{{ $student->specialization->name ?? '-' }}</td>
+                                        <td>{{ $student->section }}</td>
 
+                                        <!-- 📚 المواد -->
+                                        <td>
+                                            @foreach($student->examDistributions as $exam)
+                                                <div class="cell-item">
+                                                    {{ $exam->subject }}
+                                                </div>
+                                            @endforeach
+                                        </td>
 
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                        <!-- ⏰ الأوقات -->
+                                        <td>
+                                            @foreach($student->examDistributions as $exam)
+                                                <div class="cell-item">
+                                                    {{ $exam->period }}
+                                                </div>
+                                            @endforeach
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
 
                     </div>
                 </div>
 
-                @endforeach
+            @endforeach
 
             </div>
         </div>
@@ -96,16 +127,18 @@
         @endforeach
         <script>
             function toggle(element) {
-        let body = element.nextElementSibling;
+                let body = element.nextElementSibling;
 
-        if (!body) return;
+                if (!body) return;
 
-        if (body.style.display === "block") {
-            body.style.display = "none";
-        } else {
-            body.style.display = "block";
-        }
-    }
+                if (body.style.display === "block") {
+                    body.style.display = "none";
+                } else {
+                    body.style.display = "block";
+                }
+            }
         </script>
+        @include('includes.footer')
+
 
 </body>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LessonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/reports', [App\Http\Controllers\MuhdirController::class, 'reports'])->name('reports.index');
         Route::get('/reports/create/{student}', [App\Http\Controllers\ReportController::class, 'create'])->name('reports.create');
         Route::post('/reports', [App\Http\Controllers\ReportController::class, 'store'])->name('reports.store');
+        Route::get('/lessons', [App\Http\Controllers\LessonController::class, 'index'])->name('lessons.index');
+        Route::post('/lessons', [App\Http\Controllers\LessonController::class, 'store'])->name('lessons.store');
+        Route::post('/lessons/update', [App\Http\Controllers\LessonController::class, 'update'])->name('lessons.update');
+        Route::get('/lesson-filter', [App\Http\Controllers\MuhdirController::class, 'lessonFilter'])->name('lessonFilter');
     });
 
     // Muraqib Dashboard
@@ -46,6 +51,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+Route::post('/notifications/read/{id}', function ($id) {
+    $notification = auth()->user()->notifications()->find($id);
+
+    if ($notification) {
+        $notification->markAsRead();
+    }
+
+    return response()->json(['success' => true]);
+})->name('notifications.read');
+Route::get('/notifications/count', function () {
+    return response()->json([
+        'count' => auth()->user()->unreadNotifications->count()
+    ]);
 });
 
 require __DIR__.'/auth.php';

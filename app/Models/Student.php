@@ -57,8 +57,12 @@ class Student extends Model
     {
         return $this->belongsTo(Batch::class);
     }
-    public function examDistribution()
+    public function examDistributions()
     {
-        return $this->hasOne(\App\Models\ExamDistribution::class, 'student_id');
+        return $this->hasMany(\App\Models\ExamDistribution::class, 'student_id');
+    }
+    public function lessons()
+    {
+        return $this->hasMany(\App\Models\Lesson::class);
     }
 }

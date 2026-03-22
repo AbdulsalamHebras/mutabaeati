@@ -21,11 +21,23 @@
         <!-- زر الجوال -->
         <div class="menu-toggle" onclick="toggleMenu()">☰</div>
 
-        <!-- القائمة -->
         <nav class="nav" id="navMenu">
-            <a href="{{ route('muhdir.dashboard') }}" class="nav-link active">التحضير</a>
-            <a href="" class="nav-link">التقارير</a>
-            <a href="{{ route('muhdir.distribution') }}" class="nav-link">توزيع الاختبارات</a>
+
+            <a href="{{ route('muhdir.dashboard') }}"
+            class="nav-link {{ request()->routeIs('muhdir.dashboard') ? 'active' : '' }}">
+                التحضير
+            </a>
+
+            <a href=""
+            class="nav-link {{ request()->routeIs('muhdir.reports') ? 'active' : '' }}">
+                التقارير
+            </a>
+
+            <a href="{{ route('muhdir.distribution') }}"
+            class="nav-link {{ request()->routeIs('muhdir.distribution') ? 'active' : '' }}">
+                توزيع الاختبارات
+            </a>
+
         </nav>
 
         <!-- يمين الهيدر -->
@@ -33,13 +45,26 @@
 
             <!-- 🔔 الإشعارات -->
             <div class="notifications" onclick="toggleNotifications()">
-                🔔
-                <span class="badge">3</span>
+            🔔
+
+                <!-- 🔢 عدد غير المقروء -->
+                <span class="badge">
+                    {{ auth()->user()->unreadNotifications->count() }}
+                </span>
 
                 <div class="dropdown" id="notifDropdown">
-                    <p>📌 لديك إشعار جديد</p>
-                    <p>📌 تم إضافة اختبار جديد</p>
-                    <p>📌 تم رفع تقرير</p>
+
+                    @forelse(auth()->user()->unreadNotifications as $notification)
+                        <div class="notif-item {{ is_null($notification->read_at) ? 'unread' : '' }}"
+                            onclick="markAsRead('{{ $notification->id }}')">
+
+                            📌 {{ $notification->data['message'] }}
+
+                        </div>
+                    @empty
+                        <p>لا توجد إشعارات</p>
+                    @endforelse
+
                 </div>
             </div>
 
@@ -70,25 +95,35 @@
 <div class="header-space"></div>
 
 <script>
-function toggleMenu() {
-    document.getElementById("navMenu").classList.toggle("show");
-}
-
-function toggleNotifications() {
-    document.getElementById("notifDropdown").classList.toggle("show");
-}
-
-function toggleUserMenu() {
-    document.getElementById("userDropdown").classList.toggle("show");
-}
-
-// إغلاق القوائم عند الضغط خارجها
-window.onclick = function(e) {
-    if (!e.target.closest('.notifications')) {
-        document.getElementById("notifDropdown").classList.remove("show");
+    function toggleMenu() {
+        document.getElementById("navMenu").classList.toggle("show");
     }
-    if (!e.target.closest('.user-menu')) {
-        document.getElementById("userDropdown").classList.remove("show");
+
+    function toggleNotifications() {
+        document.getElementById("notifDropdown").classList.toggle("show");
     }
-}
+
+    function toggleUserMenu() {
+        document.getElementById("userDropdown").classList.toggle("show");
+    }
+
+    // إغلاق القوائم عند الضغط خارجها
+    window.onclick = function(e) {
+        if (!e.target.closest('.notifications')) {
+            document.getElementById("notifDropdown").classList.remove("show");
+        }
+        if (!e.target.closest('.user-menu')) {
+            document.getElementById("userDropdown").classList.remove("show");
+        }
+    }
+    function markAsRead(id) {
+        fetch('/notifications/read/' + id, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then(() => {
+            location.reload(); // تحديث الصفحة
+        });
+    }
 </script>

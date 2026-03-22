@@ -10,7 +10,7 @@ class ExamDistribution extends Model
     use HasFactory;
 
     protected $fillable = [
-        'student_id', 'supervisor_id', 'period', 'room_number', 'seat_number'
+        'student_id', 'supervisor_id', 'period', 'subject'
     ];
 
     public function student()
