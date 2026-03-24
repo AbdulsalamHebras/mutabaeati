@@ -64,6 +64,12 @@ class ExamDistributionResource extends Resource
                     ->label('الطالب')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('student.phone')
+                    ->label('رقم الجوال')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('student.national_id')
+                    ->label('رقم الهوية')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('supervisor.name')
                     ->label('المكلف بالاختبار')
                     ->sortable(),

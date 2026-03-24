@@ -130,8 +130,11 @@ class StudentResource extends Resource
                     ->label('الاسم')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('academic_id')
-                    ->label('الرقم الأكاديمي')
+                Tables\Columns\TextColumn::make('phone')
+                    ->label('رقم الجوال')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('national_id')
+                    ->label('رقم الهوية')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('university.name')
                     ->label('الجامعة')

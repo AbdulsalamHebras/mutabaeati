@@ -49,7 +49,18 @@ class UserResource extends Resource
                         'muhdir' => 'محضر',
                         'muraqib' => 'مراقب',
                     ])
+                    ->live()
                     ->required(),
+                Forms\Components\Select::make('batch_id')
+                    ->label('الدفعة المكلف بها')
+                    ->options(function () {
+                        return \App\Models\Batch::with('university')->get()->mapWithKeys(function ($batch) {
+                            return [$batch->id => ($batch->university ? $batch->university->name : 'بدون جامعة') . ' - ' . $batch->name];
+                        });
+                    })
+                    ->searchable()
+                    ->visible(fn (Forms\Get $get): bool => $get('role') === 'muraqib')
+                    ->required(fn (Forms\Get $get): bool => $get('role') === 'muraqib'),
             ]);
     }
 

@@ -15,10 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
             $table->foreignId('muhdir_id')->constrained('users')->onDelete('cascade');
-            $table->string('title')->nullable();
             $table->string('file_path');
-            $table->string('month'); // e.g. "January" or "01"
-            $table->year('year');
+            $table->string('status')->default('pending'); // pending, accepted, rejected
+            $table->text('rejection_reason')->nullable();
             $table->timestamps();
         });
     }

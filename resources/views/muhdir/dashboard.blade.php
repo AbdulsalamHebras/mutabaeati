@@ -11,6 +11,7 @@
 </head>
 <body>
     @include('includes.header')
+    <h2>  التحضير</h2>
     <input type="text" id="searchInput" placeholder="🔍 ابحث عن طالب..." class="search-box">
 
     <div class="container">
@@ -46,8 +47,8 @@
                                         <thead>
                                             <tr>
                                                 <th>الاسم</th>
-                                                <th>الهاتف</th>
-                                                <th> الرقم الهوية</th>
+                                                <th>رقم الجوال</th>
+                                                <th> رقم الهوية</th>
                                                 <th> كلمة المرور</th>
                                                 <th>البريد</th>
                                                 <th>الرقم الاكاديمي</th>
@@ -105,11 +106,6 @@
                                                 <option value="{{ $spec->id }}">{{ $spec->name }}</option>
                                             @endforeach
                                         </select>
-
-
-
-
-
                                     <button class="add-btn"
                                         onclick='openModal(@json($batchStudents))'>
                                         ➕ إضافة حصة
@@ -178,9 +174,6 @@
 
                 <!-- 👤 اختيار الطالب -->
                 <select name="student_id" id="studentSelect" size="5">
-                    @foreach($batchStudents as $student)
-                        <option value="{{ $student->id }}">{{ $student->name }}</option>
-                    @endforeach
                 </select>
 
                 <!-- المادة -->

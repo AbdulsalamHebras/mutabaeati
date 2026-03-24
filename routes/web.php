@@ -15,8 +15,12 @@ use App\Http\Controllers\LessonController;
 |
 */
 
-Route::get('/', function () {
-    return redirect()->route('login');
+Route::get('/', [App\Http\Controllers\FrontendController::class, 'index'])->name('home');
+Route::post('/student/login', [App\Http\Controllers\StudentAuthController::class, 'login'])->name('student.login.submit');
+Route::post('/student/logout', [App\Http\Controllers\StudentAuthController::class, 'logout'])->name('student.logout');
+
+Route::middleware(['auth:student'])->group(function () {
+    Route::get('/student/dashboard', [App\Http\Controllers\StudentDashboardController::class, 'index'])->name('student.dashboard');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -34,6 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/reports', [App\Http\Controllers\MuhdirController::class, 'reports'])->name('reports.index');
         Route::get('/reports/create/{student}', [App\Http\Controllers\ReportController::class, 'create'])->name('reports.create');
         Route::post('/reports', [App\Http\Controllers\ReportController::class, 'store'])->name('reports.store');
+        Route::post('/reports/multiple', [App\Http\Controllers\ReportController::class, 'storeMultiple'])->name('reports.storeMultiple');
         Route::get('/lessons', [App\Http\Controllers\LessonController::class, 'index'])->name('lessons.index');
         Route::post('/lessons', [App\Http\Controllers\LessonController::class, 'store'])->name('lessons.store');
         Route::post('/lessons/update', [App\Http\Controllers\LessonController::class, 'update'])->name('lessons.update');
@@ -42,10 +47,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Muraqib Dashboard
     Route::middleware(['role:muraqib'])->prefix('muraqib')->name('muraqib.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('muraqib.dashboard');
-        })->name('dashboard');
-
+        Route::get('/dashboard', [App\Http\Controllers\MuraqibController::class, 'dashboard'])->name('dashboard');
+        Route::get('/distributions', [App\Http\Controllers\MuraqibController::class, 'distributions'])->name('distribution');
+        Route::get('/reports', [App\Http\Controllers\MuraqibController::class, 'reports'])->name('reports.index');
+        Route::post('/reports/{report}/status', [App\Http\Controllers\MuraqibController::class, 'updateReportStatus'])->name('reports.status');
+        Route::get('/reports/create/{student}', [App\Http\Controllers\ReportController::class, 'create'])->name('reports.create');
+        Route::post('/reports', [App\Http\Controllers\ReportController::class, 'store'])->name('reports.store');
+        Route::post('/reports/multiple', [App\Http\Controllers\ReportController::class, 'storeMultiple'])->name('reports.storeMultiple');
+        Route::get('/lesson-filter', [App\Http\Controllers\MuraqibController::class, 'lessonFilter'])->name('lessonFilter');
+        Route::post('/lessons', [App\Http\Controllers\LessonController::class, 'store'])->name('lessons.store');
+        Route::post('/lessons/update', [App\Http\Controllers\LessonController::class, 'update'])->name('lessons.update');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

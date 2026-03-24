@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الاختبارات</title>
+    <title> متابعاتي</title>
 
     <link rel="stylesheet" href="{{ asset('css/includes/header.css') }}">
 </head>
@@ -15,26 +15,29 @@
 
         <!-- الشعار -->
         <div class="logo">
-            نظام الاختبارات
+           متابعاتي
         </div>
 
         <!-- زر الجوال -->
         <div class="menu-toggle" onclick="toggleMenu()">☰</div>
 
         <nav class="nav" id="navMenu">
+            @php
+                $rolePrefix = auth()->user()->isMuraqib() ? 'muraqib' : 'muhdir';
+            @endphp
 
-            <a href="{{ route('muhdir.dashboard') }}"
-            class="nav-link {{ request()->routeIs('muhdir.dashboard') ? 'active' : '' }}">
+            <a href="{{ route($rolePrefix . '.dashboard') }}"
+            class="nav-link {{ request()->routeIs($rolePrefix . '.dashboard') ? 'active' : '' }}">
                 التحضير
             </a>
 
-            <a href=""
-            class="nav-link {{ request()->routeIs('muhdir.reports') ? 'active' : '' }}">
+            <a href="{{route($rolePrefix . '.reports.index')}}"
+            class="nav-link {{ request()->routeIs($rolePrefix . '.reports.index') ? 'active' : '' }}">
                 التقارير
             </a>
 
-            <a href="{{ route('muhdir.distribution') }}"
-            class="nav-link {{ request()->routeIs('muhdir.distribution') ? 'active' : '' }}">
+            <a href="{{ route($rolePrefix . '.distribution') }}"
+            class="nav-link {{ request()->routeIs($rolePrefix . '.distribution') ? 'active' : '' }}">
                 توزيع الاختبارات
             </a>
 
@@ -73,7 +76,6 @@
                 👤
 
                 <div class="dropdown" id="userDropdown">
-                    <a href="#">الملف الشخصي</a>
 
                     <hr>
 

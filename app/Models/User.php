@@ -20,6 +20,11 @@ class User extends Authenticatable
         return $this->hasMany(Student::class, 'muhdir_id');
     }
 
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class);
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -30,6 +35,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'batch_id',
     ];
 
     public function isMuhdir(): bool

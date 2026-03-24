@@ -3,20 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\Lesson;
+use App\Models\Specialization;
 use Illuminate\Http\Request;
 
-class MuhdirController extends Controller
+class MuraqibController extends Controller
 {
     public function dashboard(Request $request)
     {
-        $students = auth()->user()->students()
-            ->where('status', 'نشط')
+        $batchId = auth()->user()->batch_id;
+
+        $students = Student::where('status', 'نشط')
+            ->where('batch_id', $batchId)
             ->with(['university', 'batch', 'specialization'])
             ->get()
-            ->groupBy('university.name'); // 👈 تجميع حسب الجامعة
-            $query = \App\Models\Lesson::whereHas('student', function ($q) {
-                $q->where('muhdir_id', auth()->id());
-            })->with(['student.specialization', 'student.batch']);
+            ->groupBy('university.name');
+
+        $query = Lesson::whereHas('student', function ($q) use ($batchId) {
+            $q->where('batch_id', $batchId);
+        })->with(['student.specialization', 'student.batch']);
+
         // فلترة الوقت
         if ($request->period) {
             $query->where('period', $request->period);
@@ -38,17 +44,19 @@ class MuhdirController extends Controller
 
         $lessons = $query->get();
 
-        $sections = \App\Models\Student::distinct()->pluck('section');
-        $specializations = \App\Models\Specialization::all();
+        $sections = Student::distinct()->pluck('section');
+        $specializations = Specialization::all();
 
-
-        return view('muhdir.dashboard', compact('students', 'sections', 'specializations', 'lessons'));
+        return view('muraqib.dashboard', compact('students', 'sections', 'specializations', 'lessons'));
     }
+
     public function lessonFilter(Request $request)
     {
-        $query = \App\Models\Lesson::whereHas('student', function ($q) {
-            $q->where('muhdir_id', auth()->id());
-        })->with(['student.specialization']);
+        $batchId = auth()->user()->batch_id;
+
+        $query = Lesson::whereHas('student', function ($q) use ($batchId) {
+            $q->where('batch_id', $batchId);
+        })->with(['student.specialization', 'student.batch']);
 
         if ($request->period) {
             $query->where('period', $request->period);
@@ -60,11 +68,8 @@ class MuhdirController extends Controller
             );
         }
 
-        if ($request->batch_id) {
-            $query->whereHas('student', fn($q) =>
-                $q->where('batch_id', $request->batch_id)
-            );
-        }
+        // No need to filter by batch_id from request since Muraqib is restricted to their batch
+        // But if they somehow send it, it's ignored or we can just apply it (which would be redundant or a security issue if they try to change it)
 
         if ($request->specialization_id) {
             $query->whereHas('student', fn($q) =>
@@ -80,14 +85,12 @@ class MuhdirController extends Controller
 
         $lessons = $query->get();
 
-        // 🔥 إذا الطلب AJAX
         if ($request->ajax()) {
             return response()->json($lessons);
         }
 
-        return view('muhdir.dashboard', compact('lessons'));
+        return view('muraqib.dashboard', compact('lessons'));
     }
-
     public function distributions(Request $request)
     {
         $periods = ['من 4 الى 5', 'من 5 الى 6', 'من 6 الى 7', 'من 7 الى 8','من 8 الى 9','من 9 الى 10'];
@@ -124,10 +127,13 @@ class MuhdirController extends Controller
 
         return view('muhdir.distribution', compact('students', 'specializations','periods', 'sections'));
     }
+
     public function reports()
     {
-        $students = auth()->user()->students()
-            ->where('status', 'نشط')
+        $batchId = auth()->user()->batch_id;
+
+        $students = Student::where('status', 'نشط')
+            ->where('batch_id', $batchId)
             ->with(['university', 'batch', 'specialization', 'reports' => function($query) {
                 // Fetch reports uploaded this current week
                 $query->whereBetween('created_at', [
@@ -138,6 +144,25 @@ class MuhdirController extends Controller
             ->get()
             ->groupBy('university.name');
 
-        return view('muhdir.reports.index', compact('students'));
+        return view('muraqib.reports.index', compact('students'));
+    }
+
+    public function updateReportStatus(Request $request, \App\Models\Report $report)
+    {
+        $request->validate([
+            'status' => 'required|in:accepted,rejected',
+            'rejection_reason' => 'nullable|string',
+        ]);
+
+        if ($request->status === 'rejected' && empty($request->rejection_reason)) {
+            return redirect()->back()->with('error', 'يجب كتابة سبب الرفض');
+        }
+
+        $report->update([
+            'status' => $request->status,
+            'rejection_reason' => $request->status === 'rejected' ? $request->rejection_reason : null,
+        ]);
+
+        return redirect()->back()->with('success', 'تم الاستجابة على التقرير بنجاح');
     }
 }
