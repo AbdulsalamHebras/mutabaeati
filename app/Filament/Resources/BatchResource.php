@@ -33,6 +33,8 @@ class BatchResource extends Resource
                 Forms\Components\Select::make('university_id')
                     ->label('الجامعة')
                     ->relationship('university', 'name')
+                    ->searchable()
+                    ->preload()
                     ->required(),
             ]);
     }

@@ -190,12 +190,18 @@
 
                 <!-- الوقت -->
                 <select name="period" required>
-                    <option>9 إلى 11</option>
-                    <option>12:30 إلى 3:30</option>
-                    <option>4 إلى 6</option>
-                    <option>5 إلى 7</option>
-                    <option>7 إلى 9</option>
-                    <option>7 إلى 10</option>
+                    <option>9 إلى 10 صباحاً</option>
+                    <option>10 إلى 11 صباحاً</option>
+                    <option>11 إلى 12 صباحاً</option>
+                    <option>12 إلى 1 مساءً</option>
+                    <option>1 إلى 2 مساءً</option>
+                    <option>2 إلى 3 مساءً</option>
+                    <option>4 إلى 5 مساءً</option>
+                    <option>5 إلى 6 مساءً</option>
+                    <option>6 إلى 7 مساءً</option>
+                    <option>7 إلى 8 مساءً</option>
+                    <option>8 إلى 9 مساءً</option>
+                    <option>9 إلى 10 مساءً</option>
                 </select>
 
                 <button type="submit" class="save-btn">💾 حفظ</button>

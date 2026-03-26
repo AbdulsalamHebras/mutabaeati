@@ -69,6 +69,7 @@ class StudentResource extends Resource
                             ->label('الجامعة')
                             ->relationship('university', 'name')
                             ->searchable()
+                            ->preload()
                             ->live()
                             ->afterStateUpdated(fn (Forms\Set $set) => $set('batch_id', null))
                             ->required(),
@@ -78,12 +79,14 @@ class StudentResource extends Resource
                                 ->where('university_id', $get('university_id'))
                                 ->pluck('name', 'id'))
                             ->searchable()
+                            ->preload()
                             ->disabled(fn (Forms\Get $get): bool => ! $get('university_id'))
                             ->required(),
                         Forms\Components\Select::make('specialization_id')
                             ->label('التخصص')
                             ->relationship('specialization', 'name')
                             ->searchable()
+                            ->preload()
                             ->required(),
                         Forms\Components\Select::make('duration')
                             ->label('مدة الدراسة')
@@ -103,6 +106,7 @@ class StudentResource extends Resource
                             ->label('المحضر المكلف')
                             ->relationship('muhdir', 'name', fn ($query) => $query->where('role', 'muhdir'))
                             ->searchable()
+                            ->preload()
                             ->required(),
                         Forms\Components\Select::make('status')
                             ->label('الحالة')

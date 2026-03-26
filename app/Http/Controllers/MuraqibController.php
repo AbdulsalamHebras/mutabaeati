@@ -93,7 +93,20 @@ class MuraqibController extends Controller
     }
     public function distributions(Request $request)
     {
-        $periods = ['من 4 الى 5', 'من 5 الى 6', 'من 6 الى 7', 'من 7 الى 8','من 8 الى 9','من 9 الى 10'];
+        $periods = [
+            'من 9 الى 10 صباحاً',
+            'من 10 الى 11 صباحاً',
+            'من 11 الى 12 صباحاً',
+            'من 12 الى 1 مساءً',
+            'من 1 الى 2 مساءً',
+            'من 2 الى 3 مساءً',
+            'من 4 الى 5 مساءً',
+            'من 5 الى 6 مساءً',
+            'من 6 الى 7 مساءً',
+            'من 7 الى 8 مساءً',
+            'من 8 الى 9 مساءً',
+            'من 9 الى 10 مساءً'
+        ];
 
         $sections = \App\Models\Student::select('section')
             ->distinct()
