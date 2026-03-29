@@ -10,6 +10,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Forms\Set;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 class ExamDistributionResource extends Resource
@@ -32,12 +34,14 @@ class ExamDistributionResource extends Resource
                     ->label('الطالب')
                     ->relationship('student', 'name')
                     ->searchable()
-                    ->required(),
+                    ->required()
+                    ->preload(),
                 Forms\Components\Select::make('supervisor_id')
                     ->label('المكلف بالاختبار')
                     ->relationship('supervisor', 'name')
                     ->searchable()
-                    ->required(),
+                    ->required()
+                    ->preload(),
                 Forms\Components\Select::make('period')
                     ->label('فترة الاختبار')
                     ->options([
@@ -58,7 +62,15 @@ class ExamDistributionResource extends Resource
                 Forms\Components\TextInput::make('subject')
                     ->label('المادة')
                     ->maxLength(255),
-
+                Forms\Components\DatePicker::make('date')
+                    ->label('تاريخ الاختبار')
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(fn (Set $set, $state) => $set('day', $state ? Carbon::parse($state)->translatedFormat('l') : null)),
+                Forms\Components\TextInput::make('day')
+                    ->label('اليوم')
+                    ->required()
+                    ->readOnly(),
             ])->columns(2);
     }
 
@@ -85,7 +97,13 @@ class ExamDistributionResource extends Resource
                 Tables\Columns\TextColumn::make('subject')
                     ->label('المادة')
                     ->sortable(),
-
+                Tables\Columns\TextColumn::make('day')
+                    ->label('اليوم')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('date')
+                    ->label('التاريخ')
+                    ->date()
+                    ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('supervisor')
@@ -107,6 +125,16 @@ class ExamDistributionResource extends Resource
                         'من 8 الى 9 مساءً' => 'من 8 الى 9 مساءً',
                         'من 9 الى 10 مساءً' => 'من 9 الى 10 مساءً',
                     ]),
+                Tables\Filters\Filter::make('date')
+                    ->form([
+                        Forms\Components\DatePicker::make('date')->label('تاريخ الاختبار'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['date'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('date', $date),
+                        );
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

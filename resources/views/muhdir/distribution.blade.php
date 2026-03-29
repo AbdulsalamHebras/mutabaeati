@@ -42,10 +42,12 @@
             @endforeach
         </select>
 
+        <input type="date" name="date" value="{{ request('date') }}" class="form-control">
+
         <button type="submit">فلترة</button>
 
     </form>
-    @foreach($students as $universityName => $uniStudents)
+    @foreach($distributions as $universityName => $uniDistributions)
 
         <div class="card">
             <div class="card-header" onclick="toggle(this)">
@@ -55,10 +57,10 @@
             <div class="card-body">
 
                 @php
-                    $batches = $uniStudents->groupBy('batch.name');
+                    $batches = $uniDistributions->groupBy('student.batch.name');
                 @endphp
 
-                @foreach($batches as $batchName => $batchStudents)
+                @foreach($batches as $batchName => $batchDistributions)
 
                 <div class="sub-card">
                     <div class="sub-header" onclick="toggle(this)">
@@ -80,36 +82,24 @@
                                         <th>التخصص</th>
                                         <th>الشعبة</th>
                                         <th>المادة</th>
+                                        <th>اليوم</th>
+                                        <th>التاريخ</th>
                                         <th>وقت الاختبار</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    @foreach($batchStudents as $student)
+                                    @foreach($batchDistributions as $exam)
                                     <tr>
-                                        <td>{{ $student->name }}</td>
-                                        <td>{{ $student->phone }}</td>
-                                        <td>{{$student->national_id}}</td>
-                                        <td>{{ $student->specialization->name ?? '-' }}</td>
-                                        <td>{{ $student->section }}</td>
-
-                                        <!-- 📚 المواد -->
-                                        <td>
-                                            @foreach($student->examDistributions as $exam)
-                                                <div class="cell-item">
-                                                    {{ $exam->subject }}
-                                                </div>
-                                            @endforeach
-                                        </td>
-
-                                        <!-- ⏰ الأوقات -->
-                                        <td>
-                                            @foreach($student->examDistributions as $exam)
-                                                <div class="cell-item">
-                                                    {{ $exam->period }}
-                                                </div>
-                                            @endforeach
-                                        </td>
+                                        <td>{{ $exam->student->name }}</td>
+                                        <td>{{ $exam->student->phone }}</td>
+                                        <td>{{ $exam->student->national_id }}</td>
+                                        <td>{{ $exam->student->specialization->name ?? '-' }}</td>
+                                        <td>{{ $exam->student->section }}</td>
+                                        <td>{{ $exam->subject }}</td>
+                                        <td>{{ $exam->day }}</td>
+                                        <td>{{ $exam->date }}</td>
+                                        <td>{{ $exam->period }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>

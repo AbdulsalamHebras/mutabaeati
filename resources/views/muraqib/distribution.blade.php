@@ -42,6 +42,8 @@
             @endforeach
         </select>
 
+        <input type="date" name="date" value="{{ request('date') }}" class="form-control">
+
         <button type="submit">فلترة</button>
 
     </form>
@@ -80,6 +82,8 @@
                                         <th>التخصص</th>
                                         <th>الشعبة</th>
                                         <th>المادة</th>
+                                        <th>يوم الاختبار</th>
+                                        <th>تاريخ الاختبار</th>
                                         <th>وقت الاختبار</th>
                                     </tr>
                                 </thead>
@@ -103,6 +107,22 @@
                                         </td>
 
                                         <!-- ⏰ الأوقات -->
+                                        <td>
+                                            @foreach($student->examDistributions as $exam)
+                                                <div class="cell-item">
+                                                    {{ $exam->exam_day }}
+                                                </div>
+                                            @endforeach
+                                        </td>
+
+                                        <td>
+                                            @foreach($student->examDistributions as $exam)
+                                                <div class="cell-item">
+                                                    {{ $exam->date }}
+                                                </div>
+                                            @endforeach
+                                        </td>
+
                                         <td>
                                             @foreach($student->examDistributions as $exam)
                                                 <div class="cell-item">

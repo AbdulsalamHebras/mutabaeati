@@ -65,4 +65,8 @@ class Student extends Authenticatable
     {
         return $this->hasMany(\App\Models\Lesson::class);
     }
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class, 'admin_id');
+    }
 }

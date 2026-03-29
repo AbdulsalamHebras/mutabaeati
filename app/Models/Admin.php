@@ -41,5 +41,5 @@ class Admin extends Authenticatable implements FilamentUser
     public function students()
     {
         return $this->hasMany(Student::class, 'admin_id');
-    }
+    } 
 }

@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('supervisor_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('period')->nullable(); // 'من 4 الى 5', etc.
             $table->string('subject')->nullable();
+            $table->date('date')->nullable();
+            $table->string('day')->nullable();
             $table->timestamps();
         });
     }

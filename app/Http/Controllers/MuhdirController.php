@@ -109,33 +109,43 @@ class MuhdirController extends Controller
             ->distinct()
             ->pluck('section');
 
-        $query = auth()->user()->students()
-            ->where('status', 'نشط')
-            ->with([
-                'university',
-                'batch',
-                'specialization',
-                'examDistributions',
-                'lessons' // 🔥 أضفناها هنا بدل الاستعلام الثاني
-            ]);
+        $query = \App\Models\ExamDistribution::whereHas('student', function ($q) {
+            $q->where('muhdir_id', auth()->id())->where('status', 'نشط');
+        })->with([
+            'student.university',
+            'student.batch',
+            'student.specialization'
+        ]);
 
         // فلترة الفترة
         if ($request->period) {
-            $query->whereHas('examDistributions', function ($q) use ($request) {
-                $q->where('period', $request->period);
-            });
+            $query->where('period', $request->period);
         }
 
         // فلترة الشعبة
         if ($request->section) {
-            $query->where('section', $request->section);
+            $query->whereHas('student', function ($q) use ($request) {
+                $q->where('section', $request->section);
+            });
         }
 
-        $students = $query->get()->groupBy('university.name');
+        // فلترة التاريخ
+        if ($request->date) {
+            $query->whereDate('date', $request->date);
+        }
+
+        // فلترة التخصص
+        if ($request->specialization_id) {
+            $query->whereHas('student', function ($q) use ($request) {
+                $q->where('specialization_id', $request->specialization_id);
+            });
+        }
+
+        $distributions = $query->get()->groupBy('student.university.name');
 
         $specializations = \App\Models\Specialization::all();
 
-        return view('muhdir.distribution', compact('students', 'specializations','periods', 'sections'));
+        return view('muhdir.distribution', compact('distributions', 'specializations','periods', 'sections'));
     }
     public function reports()
     {

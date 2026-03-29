@@ -108,37 +108,55 @@ class MuraqibController extends Controller
             'من 9 الى 10 مساءً'
         ];
 
-        $sections = \App\Models\Student::select('section')
+        $batchId = auth()->user()->batch_id;
+
+        $sections = \App\Models\Student::where('batch_id', $batchId)
+            ->select('section')
             ->distinct()
             ->pluck('section');
 
-        $query = auth()->user()->students()
+        $query = \App\Models\Student::where('batch_id', $batchId)
             ->where('status', 'نشط')
-            ->with([
-                'university',
-                'batch',
-                'specialization',
-                'examDistributions',
-                'lessons' // 🔥 أضفناها هنا بدل الاستعلام الثاني
-            ]);
-
-        // فلترة الفترة
-        if ($request->period) {
-            $query->whereHas('examDistributions', function ($q) use ($request) {
-                $q->where('period', $request->period);
+            ->with(['university', 'batch', 'specialization', 'examDistributions'])
+            ->whereHas('examDistributions', function ($q) use ($request) {
+                if ($request->period) {
+                    $q->where('period', $request->period);
+                }
+                if ($request->date) {
+                    $q->whereDate('date', $request->date);
+                }
             });
-        }
 
         // فلترة الشعبة
         if ($request->section) {
             $query->where('section', $request->section);
         }
 
+        // فلترة التاريخ
+        if ($request->date) {
+            // Already handled in whereHas, but if we want to filter students who have exams on that date
+            $query->with(['examDistributions' => function($q) use ($request) {
+                $q->whereDate('date', $request->date);
+                if ($request->period) {
+                    $q->where('period', $request->period);
+                }
+            }]);
+        } elseif ($request->period) {
+            $query->with(['examDistributions' => function($q) use ($request) {
+                $q->where('period', $request->period);
+            }]);
+        }
+
+        // فلترة التخصص
+        if ($request->specialization_id) {
+            $query->where('specialization_id', $request->specialization_id);
+        }
+
         $students = $query->get()->groupBy('university.name');
 
         $specializations = \App\Models\Specialization::all();
 
-        return view('muhdir.distribution', compact('students', 'specializations','periods', 'sections'));
+        return view('muraqib.distribution', compact('students', 'specializations','periods', 'sections'));
     }
 
     public function reports()

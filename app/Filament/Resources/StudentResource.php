@@ -152,6 +152,9 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('muhdir.name')
                     ->label('المحضر')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('admin.name')
+                    ->label('المسؤول')
+                    ->sortable(), 
                 Tables\Columns\TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
@@ -165,15 +168,15 @@ class StudentResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('admin')
+                    ->label('المسؤول')
+                    ->relationship('admin', 'name'),
                 Tables\Filters\SelectFilter::make('university')
                     ->label('الجامعة')
                     ->relationship('university', 'name'),
-                Tables\Filters\SelectFilter::make('status')
-                    ->label('الحالة')
-                    ->options([
-                        'نشط' => 'نشط',
-                        'مقيد' => 'مقيد',
-                    ]),
+                Tables\Filters\SelectFilter::make('batch')
+                    ->label('الدفعة')
+                    ->relationship('batch', 'name'),        
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
