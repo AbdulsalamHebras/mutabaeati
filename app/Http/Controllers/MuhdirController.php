@@ -14,12 +14,26 @@ class MuhdirController extends Controller
             ->with(['university', 'batch', 'specialization'])
             ->get()
             ->groupBy('university.name'); // 👈 تجميع حسب الجامعة
-            $query = \App\Models\Lesson::whereHas('student', function ($q) {
+        $query = \App\Models\Lesson::where(function ($q) {
+            $q->whereHas('student', function ($q) {
                 $q->where('muhdir_id', auth()->id());
-            })->with(['student.specialization', 'student.batch']);
+            })
+            ->orWhereHas('student.examDistributions', function ($q) {
+                $q->where('supervisor_id', auth()->id());
+            });
+        })->with(['student.specialization', 'student.batch']);
         // فلترة الوقت
-        if ($request->period) {
-            $query->where('period', $request->period);
+        // فلترة الوقت
+        if ($request->start_time || $request->end_time) {
+            $isValidRange = !$request->start_time || !$request->end_time || $request->start_time < $request->end_time;
+            if ($isValidRange) {
+                if ($request->start_time) {
+                    $query->where('start_time', '>=', $request->start_time);
+                }
+                if ($request->end_time) {
+                    $query->where('end_time', '<=', $request->end_time);
+                }
+            }
         }
 
         // فلترة الشعبة
@@ -46,12 +60,25 @@ class MuhdirController extends Controller
     }
     public function lessonFilter(Request $request)
     {
-        $query = \App\Models\Lesson::whereHas('student', function ($q) {
-            $q->where('muhdir_id', auth()->id());
-        })->with(['student.specialization']);
+        $query = \App\Models\Lesson::where(function ($q) use ($request) {
+            $q->whereHas('student', function ($q) {
+                $q->where('muhdir_id', auth()->id());
+            })
+            ->orWhereHas('student.examDistributions', function ($q) {
+                $q->where('supervisor_id', auth()->id());
+            });
+        })->with(['student.specialization', 'student.batch']);
 
-        if ($request->period) {
-            $query->where('period', $request->period);
+        if ($request->start_time || $request->end_time) {
+            $isValidRange = !$request->start_time || !$request->end_time || $request->start_time < $request->end_time;
+            if ($isValidRange) {
+                if ($request->start_time) {
+                    $query->where('start_time', '>=', $request->start_time);
+                }
+                if ($request->end_time) {
+                    $query->where('end_time', '<=', $request->end_time);
+                }
+            }
         }
 
         if ($request->section) {
@@ -90,62 +117,78 @@ class MuhdirController extends Controller
 
     public function distributions(Request $request)
     {
-        $periods = [
-            'من 9 الى 10 صباحاً',
-            'من 10 الى 11 صباحاً',
-            'من 11 الى 12 صباحاً',
-            'من 12 الى 1 مساءً',
-            'من 1 الى 2 مساءً',
-            'من 2 الى 3 مساءً',
-            'من 4 الى 5 مساءً',
-            'من 5 الى 6 مساءً',
-            'من 6 الى 7 مساءً',
-            'من 7 الى 8 مساءً',
-            'من 8 الى 9 مساءً',
-            'من 9 الى 10 مساءً'
-        ];
+        $batchId = auth()->user()->batch_id;
 
-        $sections = \App\Models\Student::select('section')
+        $sections = \App\Models\Student::where('batch_id', $batchId)
+            ->select('section')
             ->distinct()
             ->pluck('section');
 
-        $query = \App\Models\ExamDistribution::whereHas('student', function ($q) {
-            $q->where('muhdir_id', auth()->id())->where('status', 'نشط');
-        })->with([
-            'student.university',
-            'student.batch',
-            'student.specialization'
-        ]);
-
-        // فلترة الفترة
-        if ($request->period) {
-            $query->where('period', $request->period);
-        }
+        $query = \App\Models\Student::where('batch_id', $batchId)
+            ->where('status', 'نشط')
+            ->with(['university', 'batch', 'specialization', 'examDistributions'])
+            ->whereHas('examDistributions', function ($q) use ($request) {
+                $isValidRange = !$request->start_time || !$request->end_time || $request->start_time < $request->end_time;
+                if ($isValidRange) {
+                    if ($request->start_time) {
+                        $q->where('start_time', '>=', $request->start_time);
+                    }
+                    if ($request->end_time) {
+                        $q->where('end_time', '<=', $request->end_time);
+                    }
+                }
+                if ($request->date) {
+                    $q->whereDate('date', $request->date);
+                }
+            })
+            ->orWhereHas('examDistributions', function ($q) {
+                $q->where('supervisor_id', auth()->id());
+            });
 
         // فلترة الشعبة
         if ($request->section) {
-            $query->whereHas('student', function ($q) use ($request) {
-                $q->where('section', $request->section);
-            });
+            $query->where('section', $request->section);
         }
 
         // فلترة التاريخ
         if ($request->date) {
-            $query->whereDate('date', $request->date);
+            // Already handled in whereHas, but if we want to filter students who have exams on that date
+            $query->with(['examDistributions' => function($q) use ($request) {
+                $q->whereDate('date', $request->date);
+                $isValidRange = !$request->start_time || !$request->end_time || $request->start_time < $request->end_time;
+                if ($isValidRange) {
+                    if ($request->start_time) {
+                        $q->where('start_time', '>=', $request->start_time);
+                    }
+                    if ($request->end_time) {
+                        $q->where('end_time', '<=', $request->end_time);
+                    }
+                }
+            }]);
+        } elseif ($request->start_time || $request->end_time) {
+            $query->with(['examDistributions' => function($q) use ($request) {
+                $isValidRange = !$request->start_time || !$request->end_time || $request->start_time < $request->end_time;
+                if ($isValidRange) {
+                    if ($request->start_time) {
+                        $q->where('start_time', '>=', $request->start_time);
+                    }
+                    if ($request->end_time) {
+                        $q->where('end_time', '<=', $request->end_time);
+                    }
+                }
+            }]);
         }
 
         // فلترة التخصص
         if ($request->specialization_id) {
-            $query->whereHas('student', function ($q) use ($request) {
-                $q->where('specialization_id', $request->specialization_id);
-            });
+            $query->where('specialization_id', $request->specialization_id);
         }
 
-        $distributions = $query->get()->groupBy('student.university.name');
+        $students = $query->get()->groupBy('university.name');
 
         $specializations = \App\Models\Specialization::all();
 
-        return view('muhdir.distribution', compact('distributions', 'specializations','periods', 'sections'));
+        return view('muhdir.distribution', compact('students', 'specializations', 'sections'));
     }
     public function reports()
     {

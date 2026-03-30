@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
             $table->string('subject'); // المادة
             $table->string('day'); // الأحد - الخميس
-            $table->string('period'); // الوقت
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
             $table->timestamps();
         });
     }

@@ -17,8 +17,26 @@ document.addEventListener("DOMContentLoaded", () => {
     initSearch();
     initFilters();
     initPagination();
+    initFormValidation();
 
 });
+
+function initFormValidation() {
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const startInput = this.querySelector('input[name="start_time"]');
+            const endInput = this.querySelector('input[name="end_time"]');
+
+            if (startInput && endInput && startInput.value && endInput.value) {
+                if (startInput.value >= endInput.value) {
+                    e.preventDefault();
+                    alert("خطأ: يجب أن يكون وقت البداية قبل وقت النهاية");
+                }
+            }
+        });
+    });
+}
 
 // ==========================
 // 🔍 البحث العام (جدول الطلاب)
@@ -48,7 +66,8 @@ function initFilters() {
 
     subBodies.forEach(subBody => {
         const search = subBody.querySelector(".liveSearch");
-        const period = subBody.querySelector(".filterPeriod");
+        const startTime = subBody.querySelector(".filterStartTime");
+        const endTime = subBody.querySelector(".filterEndTime");
         const section = subBody.querySelector(".filterSection");
         const spec = subBody.querySelector(".filterSpec");
         const table = subBody.querySelector(".lessonsTable");
@@ -62,14 +81,20 @@ function initFilters() {
 
             timeout = setTimeout(() => {
                 let searchVal = search.value;
-                let periodVal = period.value;
+                let startVal = startTime.value;
+                let endVal = endTime.value;
                 let sectionVal = section.value;
                 let specVal = spec.value;
                 let batchId = table.dataset.batch || '';
 
+                if (startVal && endVal && startVal >= endVal) {
+                    table.innerHTML = `<tr><td colspan="9" style="text-align: center; color: red;">عذراً: وقت البداية يجب أن يكون قبل وقت النهاية</td></tr>`;
+                    return;
+                }
+
                 table.innerHTML = `<tr><td colspan="9" style="text-align: center;">جاري البحث...</td></tr>`;
 
-                fetch(`${window.routes.lessonFilter}?search=${encodeURIComponent(searchVal)}&period=${encodeURIComponent(periodVal)}&section=${encodeURIComponent(sectionVal)}&specialization_id=${encodeURIComponent(specVal)}&batch_id=${encodeURIComponent(batchId)}`, {
+                fetch(`${window.routes.lessonFilter}?search=${encodeURIComponent(searchVal)}&start_time=${encodeURIComponent(startVal)}&end_time=${encodeURIComponent(endVal)}&section=${encodeURIComponent(sectionVal)}&specialization_id=${encodeURIComponent(specVal)}&batch_id=${encodeURIComponent(batchId)}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
@@ -90,9 +115,9 @@ function initFilters() {
                                     <td>${lesson.student.section}</td>
                                     <td>${lesson.subject}</td>
                                     <td>${lesson.day}</td>
-                                    <td>${lesson.period}</td>
+                                    <td>${formatTime(lesson.start_time)} - ${formatTime(lesson.end_time)}</td>
                                     <td>
-                                        <button onclick="editLesson(${lesson.id}, '${lesson.subject}', '${lesson.day}', '${lesson.period}')">
+                                        <button onclick="editLesson(${lesson.id}, '${lesson.subject}', '${lesson.day}', '${lesson.start_time}', '${lesson.end_time}')">
                                             ✏️ تعديل
                                         </button>
                                     </td>
@@ -110,10 +135,21 @@ function initFilters() {
         }
 
         search.addEventListener("keyup", fetchLessons);
-        period.addEventListener("change", fetchLessons);
+        startTime.addEventListener("change", fetchLessons);
+        endTime.addEventListener("change", fetchLessons);
         section.addEventListener("change", fetchLessons);
         spec.addEventListener("change", fetchLessons);
     });
+}
+
+function formatTime(timeStr) {
+    if (!timeStr) return '-';
+    // Expects HH:mm or HH:mm:ss
+    let [hours, minutes] = timeStr.split(':');
+    let ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    return hours + ':' + minutes + ' ' + ampm;
 }
 
 // ==========================
@@ -188,11 +224,12 @@ function closeEditModal() {
     document.getElementById("editModal").style.display = "none";
 }
 
-function editLesson(id, subject, day, period) {
+function editLesson(id, subject, day, startTime, endTime) {
     document.getElementById('lesson_id').value = id;
     document.getElementById('subject').value = subject;
     document.getElementById('day').value = day;
-    document.getElementById('period').value = period;
+    document.getElementById('edit_start_time').value = startTime?.substring(0, 5);
+    document.getElementById('edit_end_time').value = endTime?.substring(0, 5);
 
     document.getElementById('editModal').style.display = 'block';
 }

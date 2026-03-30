@@ -24,8 +24,16 @@ class MuraqibController extends Controller
         })->with(['student.specialization', 'student.batch']);
 
         // فلترة الوقت
-        if ($request->period) {
-            $query->where('period', $request->period);
+        if ($request->start_time || $request->end_time) {
+            $isValidRange = !$request->start_time || !$request->end_time || $request->start_time < $request->end_time;
+            if ($isValidRange) {
+                if ($request->start_time) {
+                    $query->where('start_time', '>=', $request->start_time);
+                }
+                if ($request->end_time) {
+                    $query->where('end_time', '<=', $request->end_time);
+                }
+            }
         }
 
         // فلترة الشعبة
@@ -58,8 +66,16 @@ class MuraqibController extends Controller
             $q->where('batch_id', $batchId);
         })->with(['student.specialization', 'student.batch']);
 
-        if ($request->period) {
-            $query->where('period', $request->period);
+        if ($request->start_time || $request->end_time) {
+            $isValidRange = !$request->start_time || !$request->end_time || $request->start_time < $request->end_time;
+            if ($isValidRange) {
+                if ($request->start_time) {
+                    $query->where('start_time', '>=', $request->start_time);
+                }
+                if ($request->end_time) {
+                    $query->where('end_time', '<=', $request->end_time);
+                }
+            }
         }
 
         if ($request->section) {
@@ -93,21 +109,6 @@ class MuraqibController extends Controller
     }
     public function distributions(Request $request)
     {
-        $periods = [
-            'من 9 الى 10 صباحاً',
-            'من 10 الى 11 صباحاً',
-            'من 11 الى 12 صباحاً',
-            'من 12 الى 1 مساءً',
-            'من 1 الى 2 مساءً',
-            'من 2 الى 3 مساءً',
-            'من 4 الى 5 مساءً',
-            'من 5 الى 6 مساءً',
-            'من 6 الى 7 مساءً',
-            'من 7 الى 8 مساءً',
-            'من 8 الى 9 مساءً',
-            'من 9 الى 10 مساءً'
-        ];
-
         $batchId = auth()->user()->batch_id;
 
         $sections = \App\Models\Student::where('batch_id', $batchId)
@@ -119,12 +120,21 @@ class MuraqibController extends Controller
             ->where('status', 'نشط')
             ->with(['university', 'batch', 'specialization', 'examDistributions'])
             ->whereHas('examDistributions', function ($q) use ($request) {
-                if ($request->period) {
-                    $q->where('period', $request->period);
+                $isValidRange = !$request->start_time || !$request->end_time || $request->start_time < $request->end_time;
+                if ($isValidRange) {
+                    if ($request->start_time) {
+                        $q->where('start_time', '>=', $request->start_time);
+                    }
+                    if ($request->end_time) {
+                        $q->where('end_time', '<=', $request->end_time);
+                    }
                 }
                 if ($request->date) {
                     $q->whereDate('date', $request->date);
                 }
+            })
+            ->orWhereHas('examDistributions', function ($q) {
+                $q->where('supervisor_id', auth()->id());
             });
 
         // فلترة الشعبة
@@ -137,13 +147,27 @@ class MuraqibController extends Controller
             // Already handled in whereHas, but if we want to filter students who have exams on that date
             $query->with(['examDistributions' => function($q) use ($request) {
                 $q->whereDate('date', $request->date);
-                if ($request->period) {
-                    $q->where('period', $request->period);
+                $isValidRange = !$request->start_time || !$request->end_time || $request->start_time < $request->end_time;
+                if ($isValidRange) {
+                    if ($request->start_time) {
+                        $q->where('start_time', '>=', $request->start_time);
+                    }
+                    if ($request->end_time) {
+                        $q->where('end_time', '<=', $request->end_time);
+                    }
                 }
             }]);
-        } elseif ($request->period) {
+        } elseif ($request->start_time || $request->end_time) {
             $query->with(['examDistributions' => function($q) use ($request) {
-                $q->where('period', $request->period);
+                $isValidRange = !$request->start_time || !$request->end_time || $request->start_time < $request->end_time;
+                if ($isValidRange) {
+                    if ($request->start_time) {
+                        $q->where('start_time', '>=', $request->start_time);
+                    }
+                    if ($request->end_time) {
+                        $q->where('end_time', '<=', $request->end_time);
+                    }
+                }
             }]);
         }
 
@@ -156,7 +180,7 @@ class MuraqibController extends Controller
 
         $specializations = \App\Models\Specialization::all();
 
-        return view('muraqib.distribution', compact('students', 'specializations','periods', 'sections'));
+        return view('muraqib.distribution', compact('students', 'specializations', 'sections'));
     }
 
     public function reports()

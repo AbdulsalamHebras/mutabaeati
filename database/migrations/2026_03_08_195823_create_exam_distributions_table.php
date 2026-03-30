@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
             $table->foreignId('supervisor_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->string('period')->nullable(); // 'من 4 الى 5', etc.
             $table->string('subject')->nullable();
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
             $table->date('date')->nullable();
             $table->string('day')->nullable();
             $table->timestamps();

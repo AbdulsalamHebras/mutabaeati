@@ -89,10 +89,12 @@
 /* محتوى */
 .modal-content {
     background: white;
-    margin: 10% auto;
+    margin: 5% auto;
     padding: 20px;
     width: 350px;
     border-radius: 10px;
+    max-height: 85vh;
+    overflow-y: auto;
 }
 
 /* زر إغلاق */
@@ -173,4 +175,40 @@
 
 .notif-item:hover {
     background: #f5f6f8;
+}
+
+/* ⏰ حقول الوقت الجديدة */
+.time-filter, .time-filter-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafc;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.time-filter input, .time-filter-group input {
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 13px;
+}
+
+.modal-time-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.modal-time-inputs label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #475569;
+}
+
+.modal-time-inputs input {
+    width: 100% !important;
+    margin-bottom: 5px !important;
 }

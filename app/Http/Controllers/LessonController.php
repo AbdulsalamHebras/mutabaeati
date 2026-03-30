@@ -15,7 +15,8 @@ class LessonController extends Controller
             'student_id' => 'required|exists:students,id',
             'subject' => 'required|string',
             'day' => 'required|string',
-            'period' => 'required|string',
+            'start_time' => 'required',
+            'end_time' => 'required|after:start_time',
         ]);
 
         \App\Models\Lesson::create($request->all());
@@ -26,10 +27,18 @@ class LessonController extends Controller
     {
         $lesson = \App\Models\Lesson::find($request->lesson_id);
 
+        $request->validate([
+            'subject' => 'required|string',
+            'day' => 'required|string',
+            'start_time' => 'required',
+            'end_time' => 'required|after:start_time',
+        ]);
+
         $lesson->update([
             'subject' => $request->subject,
             'day' => $request->day,
-            'period' => $request->period,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
         ]);
 
         return back()->with('success', 'تم التعديل');

@@ -42,22 +42,16 @@ class ExamDistributionResource extends Resource
                     ->searchable()
                     ->required()
                     ->preload(),
-                Forms\Components\Select::make('period')
-                    ->label('فترة الاختبار')
-                    ->options([
-                        'من 9 الى 10 صباحاً' => 'من 9 الى 10 صباحاً',
-                        'من 10 الى 11 صباحاً' => 'من 10 الى 11 صباحاً',
-                        'من 11 الى 12 صباحاً' => 'من 11 الى 12 صباحاً',
-                        'من 12 الى 1 مساءً' => 'من 12 الى 1 مساءً',
-                        'من 1 الى 2 مساءً' => 'من 1 الى 2 مساءً',
-                        'من 2 الى 3 مساءً' => 'من 2 الى 3 مساءً',
-                        'من 4 الى 5 مساءً' => 'من 4 الى 5 مساءً',
-                        'من 5 الى 6 مساءً' => 'من 5 الى 6 مساءً',
-                        'من 6 الى 7 مساءً' => 'من 6 الى 7 مساءً',
-                        'من 7 الى 8 مساءً' => 'من 7 الى 8 مساءً',
-                        'من 8 الى 9 مساءً' => 'من 8 الى 9 مساءً',
-                        'من 9 الى 10 مساءً' => 'من 9 الى 10 مساءً',
-                    ])
+                Forms\Components\TimePicker::make('start_time')
+                    ->label('وقت البداية')
+                    ->displayFormat('h:i A')
+                    ->seconds(false)
+                    ->required(),
+                Forms\Components\TimePicker::make('end_time')
+                    ->label('وقت النهاية')
+                    ->displayFormat('h:i A')
+                    ->seconds(false)
+                    ->after('start_time')
                     ->required(),
                 Forms\Components\TextInput::make('subject')
                     ->label('المادة')
@@ -91,8 +85,13 @@ class ExamDistributionResource extends Resource
                 Tables\Columns\TextColumn::make('supervisor.name')
                     ->label('المكلف بالاختبار')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('period')
-                    ->label('الفترة')
+                Tables\Columns\TextColumn::make('start_time')
+                    ->label('وقت البداية')
+                    ->time('h:i A')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('end_time')
+                    ->label('وقت النهاية')
+                    ->time('h:i A')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('subject')
                     ->label('المادة')
@@ -109,22 +108,26 @@ class ExamDistributionResource extends Resource
                 Tables\Filters\SelectFilter::make('supervisor')
                     ->label('المكلف بالاختبار')
                     ->relationship('supervisor', 'name'),
-                Tables\Filters\SelectFilter::make('period')
-                    ->label('الفترة')
-                    ->options([
-                        'من 9 الى 10 صباحاً' => 'من 9 الى 10 صباحاً',
-                        'من 10 الى 11 صباحاً' => 'من 10 الى 11 صباحاً',
-                        'من 11 الى 12 صباحاً' => 'من 11 الى 12 صباحاً',
-                        'من 12 الى 1 مساءً' => 'من 12 الى 1 مساءً',
-                        'من 1 الى 2 مساءً' => 'من 1 الى 2 مساءً',
-                        'من 2 الى 3 مساءً' => 'من 2 الى 3 مساءً',
-                        'من 4 الى 5 مساءً' => 'من 4 الى 5 مساءً',
-                        'من 5 الى 6 مساءً' => 'من 5 الى 6 مساءً',
-                        'من 6 الى 7 مساءً' => 'من 6 الى 7 مساءً',
-                        'من 7 الى 8 مساءً' => 'من 7 الى 8 مساءً',
-                        'من 8 الى 9 مساءً' => 'من 8 الى 9 مساءً',
-                        'من 9 الى 10 مساءً' => 'من 9 الى 10 مساءً',
-                    ]),
+                Tables\Filters\Filter::make('time_range')
+                    ->form([
+                        Forms\Components\TimePicker::make('start_time')
+                            ->label('وقت البداية')
+                            ->seconds(false),
+                        Forms\Components\TimePicker::make('end_time')
+                            ->label('وقت النهاية')
+                            ->seconds(false),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['start_time'],
+                                fn (Builder $query, $time): Builder => $query->where('start_time', '>=', $time),
+                            )
+                            ->when(
+                                $data['end_time'],
+                                fn (Builder $query, $time): Builder => $query->where('end_time', '<=', $time),
+                            );
+                    }),
                 Tables\Filters\Filter::make('date')
                     ->form([
                         Forms\Components\DatePicker::make('date')->label('تاريخ الاختبار'),

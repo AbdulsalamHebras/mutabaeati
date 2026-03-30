@@ -12,15 +12,12 @@
     <h2>توزيع الاختبارات</h2>
     <form method="GET" class="filters">
 
-        <select name="period" class="form-control">
-            <option value="">اختر الفترة</option>
-            @foreach($periods as $period)
-                <option value="{{ $period }}"
-                    {{ request('period') == $period ? 'selected' : '' }}>
-                    {{ $period }}
-                </option>
-            @endforeach
-        </select>
+        <div class="time-filter-group" style="display: flex; align-items: center; gap: 10px;">
+            <label>من:</label>
+            <input type="time" name="start_time" value="{{ request('start_time') }}" class="form-control">
+            <label>إلى:</label>
+            <input type="time" name="end_time" value="{{ request('end_time') }}" class="form-control">
+        </div>
 
         <select name="section" class="form-control">
             <option value="">اختر الشعبة</option>
@@ -47,7 +44,7 @@
         <button type="submit">فلترة</button>
 
     </form>
-    @foreach($distributions as $universityName => $uniDistributions)
+    @foreach($students as $universityName => $uniStudents)
 
         <div class="card">
             <div class="card-header" onclick="toggle(this)">
@@ -57,10 +54,10 @@
             <div class="card-body">
 
                 @php
-                    $batches = $uniDistributions->groupBy('student.batch.name');
+                    $batches = $uniStudents->groupBy('batch.name');
                 @endphp
 
-                @foreach($batches as $batchName => $batchDistributions)
+                @foreach($batches as $batchName => $batchStudents)
 
                 <div class="sub-card">
                     <div class="sub-header" onclick="toggle(this)">
@@ -82,24 +79,58 @@
                                         <th>التخصص</th>
                                         <th>الشعبة</th>
                                         <th>المادة</th>
-                                        <th>اليوم</th>
-                                        <th>التاريخ</th>
+                                        <th>يوم الاختبار</th>
+                                        <th>تاريخ الاختبار</th>
                                         <th>وقت الاختبار</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    @foreach($batchDistributions as $exam)
+                                    @foreach($batchStudents as $student)
                                     <tr>
-                                        <td>{{ $exam->student->name }}</td>
-                                        <td>{{ $exam->student->phone }}</td>
-                                        <td>{{ $exam->student->national_id }}</td>
-                                        <td>{{ $exam->student->specialization->name ?? '-' }}</td>
-                                        <td>{{ $exam->student->section }}</td>
-                                        <td>{{ $exam->subject }}</td>
-                                        <td>{{ $exam->day }}</td>
-                                        <td>{{ $exam->date }}</td>
-                                        <td>{{ $exam->period }}</td>
+                                        <td>{{ $student->name }}</td>
+                                        <td>{{ $student->phone }}</td>
+                                        <td>{{$student->national_id}}</td>
+                                        <td>{{ $student->specialization->name ?? '-' }}</td>
+                                        <td>{{ $student->section }}</td>
+
+                                        <!-- 📚 المواد -->
+                                        <td>
+                                            @foreach($student->examDistributions as $exam)
+                                                <div class="cell-item">
+                                                    {{ $exam->subject }}
+                                                </div>
+                                            @endforeach
+                                        </td>
+
+                                        <!-- ⏰ الأوقات -->
+                                        <td>
+                                            @foreach($student->examDistributions as $exam)
+                                                <div class="cell-item">
+                                                    {{ $exam->day }}
+                                                </div>
+                                            @endforeach
+                                        </td>
+
+                                        <td>
+                                            @foreach($student->examDistributions as $exam)
+                                                <div class="cell-item">
+                                                    {{ $exam->date->format('Y-m-d') }}
+                                                </div>
+                                            @endforeach
+                                        </td>
+
+                                        <td>
+                                            @foreach($student->examDistributions as $exam)
+                                                <div class="cell-item">
+                                                    @if($exam->start_time)
+                                                        {{ $exam->start_time->format('h:i A') }} - {{ $exam->end_time?->format('h:i A') }}
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -118,17 +149,21 @@
         <script>
             function toggle(element) {
                 let body = element.nextElementSibling;
-
                 if (!body) return;
-
-                if (body.style.display === "block") {
-                    body.style.display = "none";
-                } else {
-                    body.style.display = "block";
-                }
+                body.style.display = (body.style.display === "block") ? "none" : "block";
             }
+
+            document.querySelector('form.filters').addEventListener('submit', function(e) {
+                const start = this.querySelector('input[name="start_time"]').value;
+                const end = this.querySelector('input[name="end_time"]').value;
+                if (start && end && start >= end) {
+                    e.preventDefault();
+                    alert("خطأ: يجب أن يكون وقت البداية قبل وقت النهاية");
+                }
+            });
         </script>
         @include('includes.footer')
 
 
 </body>
+</html>

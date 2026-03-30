@@ -83,17 +83,12 @@
                                     <h4>📅 جدول الحصص</h4>
                                     <input type="text" class="liveSearch" placeholder="🔍 ابحث عن طالب...">
 
-                                        <select class="filterPeriod">
-                                            <option value="">كل الأوقات</option>
-                                            <option>9 إلى 11</option>
-                                            <option>12:30 إلى 2:30</option>
-                                            <option>12:30 إلى 3:30</option>
-                                            <option>4 إلى 6</option>
-                                            <option>4 إلى 7</option>
-                                            <option>5 إلى 7</option>
-                                            <option>7 إلى 9</option>
-                                            <option>7 إلى 10</option>
-                                        </select>
+                                        <div class="time-filter">
+                                            <label>من:</label>
+                                            <input type="time" class="filterStartTime">
+                                            <label>إلى:</label>
+                                            <input type="time" class="filterEndTime">
+                                        </div>
 
                                         <select class="filterSection">
                                             <option value="">كل الشعب</option>
@@ -141,10 +136,12 @@
 
                                                 <td>{{ $lesson->subject }}</td>
                                                 <td>{{ $lesson->day }}</td>
-                                                <td>{{ $lesson->period }}</td>
+                                                <td>
+                                                    {{ $lesson->start_time?->format('h:i A') }} - {{ $lesson->end_time?->format('h:i A') }}
+                                                </td>
 
                                                 <td>
-                                                    <button onclick="editLesson({{ $lesson->id }}, '{{ $lesson->subject }}', '{{ $lesson->day }}', '{{ $lesson->period }}')">
+                                                    <button onclick="editLesson({{ $lesson->id }}, '{{ $lesson->subject }}', '{{ $lesson->day }}', '{{ $lesson->start_time?->format('H:i') }}', '{{ $lesson->end_time?->format('H:i') }}')">
                                                         ✏️ تعديل
                                                     </button>
                                                 </td>
@@ -191,15 +188,12 @@
                 </select>
 
                 <!-- الوقت -->
-                <select name="period" required>
-                    <option>9 إلى 11</option>
-                    <option>12:30 إلى 3:30</option>
-                    <option>4 إلى 6</option>
-                    <option>4 إلى 7</option>
-                    <option>5 إلى 7</option>
-                    <option>7 إلى 9</option>
-                    <option>7 إلى 10</option>
-                </select>
+                                                <div class="modal-time-inputs">
+                                                    <label>وقت البداية</label>
+                                                    <input type="time" name="start_time" required>
+                                                    <label>وقت النهاية</label>
+                                                    <input type="time" name="end_time" required>
+                                                </div>
 
                 <button type="submit" class="save-btn">💾 حفظ</button>
 
@@ -227,15 +221,12 @@
                     <option>الخميس</option>
                 </select>
 
-                <select name="period" id="period">
-                    <option>9 إلى 11</option>
-                    <option>12:30 إلى 3:30</option>
-                    <option>4 إلى 6</option>
-                    <option>4 إلى 7</option>
-                    <option>5 إلى 7</option>
-                    <option>7 إلى 9</option>
-                    <option>7 إلى 10</option>
-                </select>
+                <div class="modal-time-inputs">
+                    <label>وقت البداية</label>
+                    <input type="time" name="start_time" id="edit_start_time" required>
+                    <label>وقت النهاية</label>
+                    <input type="time" name="end_time" id="edit_end_time" required>
+                </div>
 
                 <button type="submit">💾 حفظ</button>
             </form>

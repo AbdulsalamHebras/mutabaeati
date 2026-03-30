@@ -12,15 +12,12 @@
     <h2>توزيع الاختبارات</h2>
     <form method="GET" class="filters">
 
-        <select name="period" class="form-control">
-            <option value="">اختر الفترة</option>
-            @foreach($periods as $period)
-                <option value="{{ $period }}"
-                    {{ request('period') == $period ? 'selected' : '' }}>
-                    {{ $period }}
-                </option>
-            @endforeach
-        </select>
+        <div class="time-filter-group" style="display: flex; align-items: center; gap: 10px;">
+            <label>من:</label>
+            <input type="time" name="start_time" value="{{ request('start_time') }}" class="form-control">
+            <label>إلى:</label>
+            <input type="time" name="end_time" value="{{ request('end_time') }}" class="form-control">
+        </div>
 
         <select name="section" class="form-control">
             <option value="">اختر الشعبة</option>
@@ -110,7 +107,7 @@
                                         <td>
                                             @foreach($student->examDistributions as $exam)
                                                 <div class="cell-item">
-                                                    {{ $exam->exam_day }}
+                                                    {{ $exam->day }}
                                                 </div>
                                             @endforeach
                                         </td>
@@ -118,7 +115,7 @@
                                         <td>
                                             @foreach($student->examDistributions as $exam)
                                                 <div class="cell-item">
-                                                    {{ $exam->date }}
+                                                    {{ $exam->date->format('Y-m-d') }}
                                                 </div>
                                             @endforeach
                                         </td>
@@ -126,7 +123,11 @@
                                         <td>
                                             @foreach($student->examDistributions as $exam)
                                                 <div class="cell-item">
-                                                    {{ $exam->period }}
+                                                    @if($exam->start_time)
+                                                        {{ $exam->start_time->format('h:i A') }} - {{ $exam->end_time?->format('h:i A') }}
+                                                    @else
+                                                        -
+                                                    @endif
                                                 </div>
                                             @endforeach
                                         </td>
@@ -148,17 +149,21 @@
         <script>
             function toggle(element) {
                 let body = element.nextElementSibling;
-
                 if (!body) return;
-
-                if (body.style.display === "block") {
-                    body.style.display = "none";
-                } else {
-                    body.style.display = "block";
-                }
+                body.style.display = (body.style.display === "block") ? "none" : "block";
             }
+
+            document.querySelector('form.filters').addEventListener('submit', function(e) {
+                const start = this.querySelector('input[name="start_time"]').value;
+                const end = this.querySelector('input[name="end_time"]').value;
+                if (start && end && start >= end) {
+                    e.preventDefault();
+                    alert("خطأ: يجب أن يكون وقت البداية قبل وقت النهاية");
+                }
+            });
         </script>
         @include('includes.footer')
 
 
 </body>
+</html>

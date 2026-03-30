@@ -10,7 +10,13 @@ class ExamDistribution extends Model
     use HasFactory;
 
     protected $fillable = [
-        'student_id', 'supervisor_id', 'period', 'subject', 'date', 'exam_day'
+        'student_id', 'supervisor_id', 'subject', 'date', 'day', 'start_time', 'end_time'
+    ];
+
+    protected $casts = [
+        'start_time' => 'datetime:H:i',
+        'end_time' => 'datetime:H:i',
+        'date' => 'date',
     ];
 
     public function student()

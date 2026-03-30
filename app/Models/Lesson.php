@@ -10,7 +10,12 @@ class Lesson extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'student_id','subject', 'day', 'period'
+        'student_id','subject', 'day', 'start_time', 'end_time'
+    ];
+
+    protected $casts = [
+        'start_time' => 'datetime:H:i',
+        'end_time' => 'datetime:H:i',
     ];
     public function student(){
         return $this->belongsTo(Student::class);
