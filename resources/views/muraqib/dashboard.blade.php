@@ -161,41 +161,53 @@
 
         <div class="modal-content">
 
-            <span class="close" onclick="closeModal()">&times;</span>
-
-            <h3>إضافة حصة</h3>
+            <div class="modal-header">
+                <h3>إضافة حصة جديدة</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
 
             <form method="POST" action="{{ route('muraqib.lessons.store') }}">
                 @csrf
 
-                <!-- 🔍 بحث -->
-                <input type="text" id="studentSearch" placeholder="🔍 ابحث عن طالب..." onkeyup="filterStudents()">
+                <div class="form-group">
+                    <label for="studentSearch">🔍 البحث عن طالب</label>
+                    <input type="text" id="studentSearch" placeholder="اكتب اسم الطالب للبحث..." onkeyup="filterStudents()" autocomplete="off">
+                </div>
 
-                <!-- 👤 اختيار الطالب -->
-                <select name="student_id" id="studentSelect" size="5">
-                </select>
+                <div class="form-group">
+                    <label for="studentSelect">👤 اختيار الطالب من القائمة</label>
+                    <select name="student_id" id="studentSelect" size="5" required>
+                    </select>
+                </div>
 
-                <!-- المادة -->
-                <input type="text" name="subject" placeholder="المادة" required>
+                <div class="form-group">
+                    <label for="subject">📚 المادة</label>
+                    <input type="text" name="subject" id="subject" placeholder="اسم المادة" required>
+                </div>
 
-                <!-- اليوم -->
-                <select name="day" required>
-                    <option>الأحد</option>
-                    <option>الإثنين</option>
-                    <option>الثلاثاء</option>
-                    <option>الأربعاء</option>
-                    <option>الخميس</option>
-                </select>
+                <div class="form-group">
+                    <label for="day">📅 اليوم</label>
+                    <select name="day" id="day" required>
+                        <option value="الأحد">الأحد</option>
+                        <option value="الإثنين">الإثنين</option>
+                        <option value="الثلاثاء">الثلاثاء</option>
+                        <option value="الأربعاء">الأربعاء</option>
+                        <option value="الخميس">الخميس</option>
+                    </select>
+                </div>
 
-                <!-- الوقت -->
-                                                <div class="modal-time-inputs">
-                                                    <label>وقت البداية</label>
-                                                    <input type="time" name="start_time" required>
-                                                    <label>وقت النهاية</label>
-                                                    <input type="time" name="end_time" required>
-                                                </div>
+                <div class="modal-time-inputs">
+                    <div class="time-field">
+                        <label>🕒 وقت البداية</label>
+                        <input type="time" name="start_time" required>
+                    </div>
+                    <div class="time-field">
+                        <label>🕒 وقت النهاية</label>
+                        <input type="time" name="end_time" required>
+                    </div>
+                </div>
 
-                <button type="submit" class="save-btn">💾 حفظ</button>
+                <button type="submit" class="save-btn">💾 حفظ الحصة</button>
 
             </form>
 
@@ -204,31 +216,43 @@
     </div>
     <div id="editModal" class="modal">
     <div class="modal-content">
-            <span class="close" onclick="closeEditModal()">&times;</span>
-            <h3>تعديل الحصة</h3>
+            <div class="modal-header">
+                <h3>تعديل الحصة</h3>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
             <form method="POST" action="{{ route('muraqib.lessons.update') }}">
                 @csrf
 
                 <input type="hidden" name="lesson_id" id="lesson_id">
 
-                <input type="text" name="subject" id="subject">
-
-                <select name="day" id="day">
-                    <option>الأحد</option>
-                    <option>الإثنين</option>
-                    <option>الثلاثاء</option>
-                    <option>الأربعاء</option>
-                    <option>الخميس</option>
-                </select>
-
-                <div class="modal-time-inputs">
-                    <label>وقت البداية</label>
-                    <input type="time" name="start_time" id="edit_start_time" required>
-                    <label>وقت النهاية</label>
-                    <input type="time" name="end_time" id="edit_end_time" required>
+                <div class="form-group">
+                    <label for="subject">📚 المادة</label>
+                    <input type="text" name="subject" id="subject" placeholder="المادة" required>
                 </div>
 
-                <button type="submit">💾 حفظ</button>
+                <div class="form-group">
+                    <label for="day">📅 اليوم</label>
+                    <select name="day" id="day" required>
+                        <option value="الأحد">الأحد</option>
+                        <option value="الإثنين">الإثنين</option>
+                        <option value="الثلاثاء">الثلاثاء</option>
+                        <option value="الأربعاء">الأربعاء</option>
+                        <option value="الخميس">الخميس</option>
+                    </select>
+                </div>
+
+                <div class="modal-time-inputs">
+                    <div class="time-field">
+                        <label>🕒 وقت البداية</label>
+                        <input type="time" name="start_time" id="edit_start_time" required>
+                    </div>
+                    <div class="time-field">
+                        <label>🕒 وقت النهاية</label>
+                        <input type="time" name="end_time" id="edit_end_time" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="save-btn">💾 حفظ التعديلات</button>
             </form>
 
         </div>

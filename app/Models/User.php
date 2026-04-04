@@ -20,6 +20,11 @@ class User extends Authenticatable
         return $this->hasMany(Student::class, 'muhdir_id');
     }
 
+    public function batchStudents()
+    {
+        return $this->hasMany(Student::class, 'batch_id', 'batch_id');
+    }
+
     public function batch()
     {
         return $this->belongsTo(Batch::class);

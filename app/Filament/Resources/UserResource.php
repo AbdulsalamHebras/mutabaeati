@@ -3,6 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers\MuhdirStudentsRelationManager;
+use App\Filament\Resources\UserResource\RelationManagers\BatchStudentsRelationManager;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -90,6 +92,14 @@ class UserResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            MuhdirStudentsRelationManager::class,
+            BatchStudentsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
