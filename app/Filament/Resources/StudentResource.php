@@ -107,7 +107,12 @@ class StudentResource extends Resource
                             ->relationship('muhdir', 'name', fn ($query) => $query->where('role', 'muhdir'))
                             ->searchable()
                             ->preload()
-                            ->required(),
+                            ->required()
+                            ->visible(fn () => in_array(auth()->user()?->email, [
+                                'abeer@gmail.com',
+                                'muetamir@gmail.com',
+                                'salamhebras@gmail.com',
+                            ])),
                         Forms\Components\Select::make('status')
                             ->label('الحالة')
                             ->options([
@@ -151,7 +156,12 @@ class StudentResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('muhdir.name')
                     ->label('المحضر')
-                    ->sortable(),
+                    ->sortable()
+                    ->visible(fn () => in_array(auth()->user()?->email, [
+                        'abeer@gmail.com',
+                        'muetamir@gmail.com',
+                        'salamhebras@gmail.com',
+                    ])),
                 Tables\Columns\TextColumn::make('admin.name')
                     ->label('المسؤول')
                     ->sortable(), 
@@ -177,6 +187,14 @@ class StudentResource extends Resource
                 Tables\Filters\SelectFilter::make('batch')
                     ->label('الدفعة')
                     ->relationship('batch', 'name'),        
+                Tables\Filters\SelectFilter::make('muhdir')
+                    ->label('المحضر')
+                    ->relationship('muhdir', 'name', fn ($query) => $query->where('role', 'muhdir'))
+                    ->visible(fn () => in_array(auth()->user()?->email, [
+                        'abeer@gmail.com',
+                        'muetamir@gmail.com',
+                        'salamhebras@gmail.com',
+                    ])),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

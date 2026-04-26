@@ -37,7 +37,12 @@ class BatchStudentsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('batch.name')
                     ->label('الدفعة'),
                 Tables\Columns\TextColumn::make('muhdir.name')
-                    ->label('المحضر المكلف'),
+                    ->label('المحضر المكلف')
+                    ->visible(fn () => in_array(auth()->user()?->email, [
+                        'abeer@gmail.com',
+                        'muetamir@gmail.com',
+                        'salamhebras@gmail.com',
+                    ])),
                 Tables\Columns\TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()

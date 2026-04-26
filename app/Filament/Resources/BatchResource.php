@@ -50,6 +50,9 @@ class BatchResource extends Resource
                 Tables\Columns\TextColumn::make('university.name')
                     ->label('الجامعة')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('students_count')
+                    ->counts('students')
+                    ->label('عدد الطلاب'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('university')

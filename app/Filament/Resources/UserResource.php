@@ -17,6 +17,15 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()?->email, [
+            'abeer@gmail.com',
+            'muetamir@gmail.com',
+            'salamhebras@gmail.com',
+        ]);
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-users';
     
     protected static ?string $navigationLabel = 'المستخدمين (محضرين/مراقبين)';
