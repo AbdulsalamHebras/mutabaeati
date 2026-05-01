@@ -47,7 +47,14 @@ class StudentResource extends Resource
                         Forms\Components\TextInput::make('national_id')
                             ->label('رقم الهوية')
                             ->unique(ignoreRecord: true)
-                            ->maxLength(255),
+                            ->minLength(10)
+                            ->maxLength(10)
+                            ->regex('/^(10|11)[0-9]{8}$/')
+                            ->validationMessages([
+                                'regex' => 'رقم الهوية يجب أن يبدأ بـ 10 أو 11 وأن يحتوي على أرقام فقط.',
+                                'min' => 'رقم الهوية يجب أن يكون 10 أرقام بالضبط (أدخلت أقل من المطلوب).',
+                                'max' => 'رقم الهوية يجب أن يكون 10 أرقام بالضبط (أدخلت أكثر من المطلوب).',
+                            ]),
                     ])->columns(2),
 
                 Forms\Components\Section::make('معلومات التواصل')
@@ -55,7 +62,14 @@ class StudentResource extends Resource
                         Forms\Components\TextInput::make('phone')
                             ->label('رقم الجوال')
                             ->tel()
-                            ->maxLength(255),
+                            ->minLength(9)
+                            ->maxLength(9)
+                            ->regex('/^5[0-9]{8}$/')
+                            ->validationMessages([
+                                'regex' => 'رقم الجوال يجب أن يبدأ بـ 5 وأن يحتوي على أرقام فقط.',
+                                'min' => 'رقم الجوال يجب أن يكون 9 أرقام بالضبط (أدخلت أقل من المطلوب).',
+                                'max' => 'رقم الجوال يجب أن يكون 9 أرقام بالضبط (أدخلت أكثر من المطلوب).',
+                            ]),
                         Forms\Components\TextInput::make('email')
                             ->label('البريد الإلكتروني')
                             ->email()
