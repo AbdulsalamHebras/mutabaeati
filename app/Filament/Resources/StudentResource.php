@@ -138,13 +138,19 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('الاسم')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->copyable()
+                    ->copyMessage('تم نسخ الاسم'),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('رقم الجوال')
-                    ->searchable(),
+                    ->searchable()
+                    ->copyable()
+                    ->copyMessage('تم نسخ رقم الجوال'),
                 Tables\Columns\TextColumn::make('national_id')
                     ->label('رقم الهوية')
-                    ->searchable(),
+                    ->searchable()
+                    ->copyable()
+                    ->copyMessage('تم نسخ رقم الهوية'),
                 Tables\Columns\TextColumn::make('university.name')
                     ->label('الجامعة')
                     ->sortable(),
