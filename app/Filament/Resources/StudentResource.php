@@ -12,6 +12,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 
@@ -59,7 +60,7 @@ class StudentResource extends Resource
 
                 Forms\Components\Section::make('معلومات التواصل')
                     ->schema([
-                        Forms\Components\TextInput::make('phone')
+                       Forms\Components\TextInput::make('phone')
                             ->label('رقم الجوال')
                             ->tel()
                             ->minLength(9)
@@ -152,19 +153,24 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('الاسم')
                     ->searchable()
-                    ->sortable()
                     ->copyable()
-                    ->copyMessage('تم نسخ الاسم'),
+                    ->copyMessage('تم نسخ رقم الهوية')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('رقم الجوال')
                     ->searchable()
                     ->copyable()
-                    ->copyMessage('تم نسخ رقم الجوال'),
+                    ->copyMessage('تم نسخ رقم الهوية'),
                 Tables\Columns\TextColumn::make('national_id')
                     ->label('رقم الهوية')
                     ->searchable()
                     ->copyable()
                     ->copyMessage('تم نسخ رقم الهوية'),
+                Tables\Columns\TextColumn::make('platform_password')
+                    ->label('كلمة المرور ')
+                    
+                    ->copyable()
+                    ->copyMessage('تم نسخ رقم كلمة المرور'),
                 Tables\Columns\TextColumn::make('university.name')
                     ->label('الجامعة')
                     ->sortable(),
@@ -185,13 +191,7 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('admin.name')
                     ->label('المسؤول')
                     ->sortable(), 
-                Tables\Columns\TextColumn::make('status')
-                    ->label('الحالة')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'نشط' => 'success',
-                        'مقيد' => 'danger',
-                    }),
+                
                 Tables\Columns\TextColumn::make('notes')
                     ->label('ملاحظة')
                     ->limit(50)
@@ -241,5 +241,17 @@ class StudentResource extends Resource
             'create' => Pages\CreateStudent::route('/create'),
             'edit' => Pages\EditStudent::route('/{record}/edit'),
         ];
+    }
+    
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        $user = auth()->user();
+        if ($user && !in_array($user->email, ['muetamir@gmail.com', 'salamhebras@gmail.com'])) {
+            $query->where('admin_id', $user->id);
+        }
+
+        return $query;
     }
 }
