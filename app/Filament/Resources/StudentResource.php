@@ -254,4 +254,14 @@ class StudentResource extends Resource
 
         return $query;
     }
+
+    public static function canCreate(): bool
+    {
+        $user = auth()->user();
+        return $user && in_array($user->email, [
+            'abeer@gmail.com',
+            'muetamir@gmail.com',
+            'salamhebras@gmail.com',
+        ]);
+    }
 }
