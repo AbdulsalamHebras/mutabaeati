@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
 use App\Models\Subscription;
+use App\Models\Month;
 use Carbon\Carbon;
 
 class MonthlySubscriptionsChart extends ChartWidget
@@ -15,12 +16,21 @@ class MonthlySubscriptionsChart extends ChartWidget
     {
         $year = Carbon::now()->year;
         
-        // Fetch all paid subscriptions for the current year
+        $englishMonths = [
+            'January' => 1, 'February' => 2, 'March' => 3, 'April' => 4,
+            'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8,
+            'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12
+        ];
+
+        // Fetch all paid subscriptions for the current year based on their registered month
         $subscriptions = Subscription::where('is_paid', true)
-            ->whereYear('created_at', $year)
+            ->whereHas('month', function($q) use ($year) {
+                $q->where('year', $year);
+            })
+            ->with('month')
             ->get()
-            ->groupBy(function($val) {
-                return Carbon::parse($val->created_at)->format('n');
+            ->groupBy(function($val) use ($englishMonths) {
+                return $englishMonths[$val->month->name] ?? 1;
             });
 
         $data = [];

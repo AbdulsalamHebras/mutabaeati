@@ -14,7 +14,9 @@ class CreateStudent extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['admin_id'] = auth()->id();
+        if (empty($data['admin_id'])) {
+            $data['admin_id'] = auth()->id();
+        }
 
         return $data;
     }

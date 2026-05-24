@@ -117,6 +117,17 @@ class StudentResource extends Resource
 
                 Forms\Components\Section::make('التكليف والحالة')
                     ->schema([
+                        Forms\Components\Select::make('admin_id')
+                            ->label('المسؤول')
+                            ->relationship('admin', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->visible(fn () => in_array(auth()->user()?->email, [
+                                'abeer@gmail.com',
+                                'muetamir@gmail.com',
+                                'salamhebras@gmail.com',
+                            ])),
                         Forms\Components\Select::make('muhdir_id')
                             ->label('المحضر المكلف')
                             ->relationship('muhdir', 'name', fn ($query) => $query->where('role', 'muhdir'))
@@ -135,7 +146,7 @@ class StudentResource extends Resource
                                 'مقيد' => 'مقيد',
                             ])
                             ->required(),
-                    ])->columns(2),
+                    ])->columns(3),
 
                 Forms\Components\Section::make('ملاحظات إضافية')
                     ->schema([
