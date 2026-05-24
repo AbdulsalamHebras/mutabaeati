@@ -15,19 +15,31 @@ class StatsOverview extends BaseWidget
 {
     protected function getStats(): array
     {
-        $currentMonth = Carbon::now();
-        $prevMonth = Carbon::now()->subMonth();
+        $arabicMonths = [
+            1 => 'يناير', 2 => 'فبراير', 3 => 'مارس',
+            4 => 'أبريل', 5 => 'مايو', 6 => 'يونيو',
+            7 => 'يوليو', 8 => 'أغسطس', 9 => 'سبتمبر',
+            10 => 'أكتوبر', 11 => 'نوفمبر', 12 => 'ديسمبر'
+        ];
 
-        $monthIds = Month::where(function ($q) use ($currentMonth) {
-            $q->where('name', $currentMonth->format('F'))
-              ->where('year', $currentMonth->year);
-        })->orWhere(function ($q) use ($prevMonth) {
-            $q->where('name', $prevMonth->format('F'))
-              ->where('year', $prevMonth->year);
-        })->pluck('id');
+        $currentCarbon = Carbon::now();
+        $currentArabicName = $arabicMonths[$currentCarbon->month];
+        $currentMonthId = Month::where('name', $currentCarbon->format('F'))
+            ->where('year', $currentCarbon->year)
+            ->value('id');
 
-        $twoMonthsAmount = Subscription::where('is_paid', true)
-            ->whereIn('month_id', $monthIds)
+        $prevCarbon = Carbon::now()->subMonth();
+        $prevArabicName = $arabicMonths[$prevCarbon->month];
+        $prevMonthId = Month::where('name', $prevCarbon->format('F'))
+            ->where('year', $prevCarbon->year)
+            ->value('id');
+
+        $currentMonthAmount = Subscription::where('is_paid', true)
+            ->where('month_id', $currentMonthId)
+            ->sum('amount');
+
+        $prevMonthAmount = Subscription::where('is_paid', true)
+            ->where('month_id', $prevMonthId)
             ->sum('amount');
 
         return [
@@ -51,8 +63,13 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),
                 
-            Stat::make('اشتراكات آخر شهرين', $twoMonthsAmount . ' ريال')
-                ->description('المحصل للشهر الحالي والسابق')
+            Stat::make("اشتراكات الشهر الحالي ($currentArabicName)", $currentMonthAmount . ' ريال')
+                ->description('المحصل لهذا الشهر')
+                ->descriptionIcon('heroicon-m-currency-dollar')
+                ->color('warning'),
+
+            Stat::make("اشتراكات الشهر السابق ($prevArabicName)", $prevMonthAmount . ' ريال')
+                ->description('المحصل للشهر الماضي')
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color('warning'),
         ];
