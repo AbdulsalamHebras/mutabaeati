@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Traits\LogsActivityWithDefaults;
 
 class Student extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, LogsActivityWithDefaults;
+
+    protected $dontLogFields = ['platform_password'];
 
     protected $fillable = [
         'name', 'muhdir_id', 'phone', 'national_id', 'email',

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\LogsActivityWithDefaults;
 
 class Batch extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivityWithDefaults;
 
     protected $fillable = ['name', 'university_id'];
 

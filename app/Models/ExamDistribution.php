@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\LogsActivityWithDefaults;
 
 class ExamDistribution extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivityWithDefaults;
 
     protected $fillable = [
         'student_id', 'supervisor_id', 'subject', 'date', 'day', 'start_time', 'end_time'

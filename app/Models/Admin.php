@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use App\Traits\LogsActivityWithDefaults;
 
 class Admin extends Authenticatable implements FilamentUser
 {
-    use HasFactory;
+    use HasFactory, LogsActivityWithDefaults;
 
     protected $fillable = [
         'name',
